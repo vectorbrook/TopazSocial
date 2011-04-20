@@ -1,0 +1,13 @@
+<% if @features and @features.size > 0 -%>
+  <% @features.each do |feature| -%>
+    <div class="sapp_feature">
+      <h4><%= feature.app.name %></h4>
+      <h4><%= feature.name %>1</h4>
+      <p><%= feature.description %></p>
+      <p>Status: <%= feature.status %></p>
+    </div>
+  <% end -%>
+<% else -%>
+  You have no reviews.
+<% end -%>
+

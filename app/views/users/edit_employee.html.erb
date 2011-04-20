@@ -1,0 +1,31 @@
+<h2>Edit Employee</h2>
+
+<%= form_for(@user, :url => edit_employee_path(@user), :html => { :method => :put }) do |f| %>
+  <%= f.error_messages %>
+
+  <p><%= f.label :name %><br />
+  <%= f.text_field :name %></p>
+  
+  <p><%= f.label :email %><br />
+  <%= f.text_field :email %></p>  
+  
+  <p>
+    <%= f.label :role11 %>: 
+    <input id="user_role_" name="user[role][]" type="hidden" value="" />
+    <ul>
+      <% ROLES.each do |role| -%>
+        <li>
+          <label for="user_role_<%= role %>">
+            <input id="user_role_<%= role %>" name="user[role][]" type="checkbox" value="<%= role %>" <%= (@user.role.include? role) ? "checked='checked'" : "" %> /> 
+            <%= role.titleize %>
+          </label>
+        </li>
+      <% end -%>        
+    </ul>
+  </p>
+  
+
+  <p><%= f.submit "Update" %></p>
+<% end %>
+
+<%= link_to "Back", :back %>

@@ -1,0 +1,68 @@
+<p id="notice"><%= notice %></p>
+<h1><%= @service_case.name %></h1>
+
+  <div class="sapp_feature">
+    <h4><%= @service_case.name %></h4>
+    <h4><%= @service_case.account.name %></h4>
+    <h4><%= @service_case.priority %></h4>
+    <h4><%= @service_case.status %></h4>
+    <p><%= @service_case.description %></p>
+  </div>
+  
+  <p>
+    <% if @service_case.service_case_logs.size > 0 -%>
+      <p>
+        Case History:
+        <br />
+        <% @service_case.service_case_logs.each do |t| -%>
+          <%= t.log_text %>
+          <br />
+          <%= t.created_at %>
+          <br />
+        <% end -%>
+      </p>
+    <% end -%>
+  </p>
+  
+  <p>
+    <% if @service_case.service_case_interactions.size > 0 -%>
+      <p>
+        Customer Interaction:
+        <br />
+        <% @service_case.service_case_interactions.each do |t| -%>
+          <%= t.description %>
+          <br />
+          <%= t.status %>
+          <br />
+          <%= t.solution %>
+          <br />
+          <%= t.created_at %>
+        <% end -%>
+      </p>
+    <% end -%>
+    <p>
+      <h4>Add new interaction:</h4>
+      <%= form_tag('/add_interaction') do %>
+        <input type="hidden" id="service_case_id" name="service_case_id" value="<%= @service_case.id.to_s%>">
+        <div class="field">
+          <%= label_tag :description  %><br />
+          <%= text_area_tag :description %>
+        </div>
+        <div class="field">
+          <%= label_tag :status  %><br />
+          <%= text_field_tag :status %>
+        </div>
+        <div class="field">
+          <%= label_tag :solution  %><br />
+          <%= text_area_tag :solution %>
+        </div>
+        <div class="actions">
+          <%= submit_tag "Add Interaction" %>
+        </div>
+      <% end -%>
+    </p>
+  </p>
+
+<%= link_to "Assign" , assign_case_path(@service_case)%>
+<%= link_to 'Edit', edit_service_case_path(@service_case) %> |
+<%= link_to 'Back', :back %>

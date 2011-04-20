@@ -1,0 +1,21 @@
+<h1>General  Users Administration</h1>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th></th>
+  </tr>
+
+<% @users.each do |user| -%>
+  <tr>
+    <td><%= user.name || " " %></td>
+    <td>
+      <% if user.access_locked? -%>
+        <%= link_to "Enable" , enable_user_path(user) %>
+      <% else -%>
+        <%= link_to "Disable" , disable_user_path(user) %>
+      <% end -%>
+    </td>  
+  </tr>
+<% end -%>
+</table>

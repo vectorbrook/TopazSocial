@@ -1,0 +1,62 @@
+<%= form_for([@account,@site,@contact]) do |c| %>
+  <% if @site.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@contact.errors.count, "error") %> prohibited this app from being saved:</h2>
+
+      <ul>
+      <% @contact.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= c.hidden_field :site_id  %>
+  </div>
+
+  <div class="field">
+      <%= c.label :first_name  %><br />
+      <%= c.text_field :first_name %>
+    </div>
+    
+    <div class="field">
+      <%= c.label :last_name  %><br />
+      <%= c.text_field :last_name %>
+    </div>
+    
+    <div class="field">
+      <%= c.label :phone_number  %><br />
+      <%= c.text_field :phone_number1 %>
+    </div>
+    
+    <div class="field">
+      <%= c.label :fax_number  %><br />
+      <%= c.text_field :fax_number %>
+    </div>
+    
+    <div class="field">
+      <%= c.label :email_address  %><br />
+      <%= c.text_field :email_addr %>
+    </div>
+    
+    <div class="field">
+      <%= c.label :sell_to  %><br />
+      <%= c.check_box :sell_to %>
+    </div>
+    
+    <div class="field">
+      <%= c.label :ship_to  %><br />
+      <%= c.check_box :ship_to %>
+    </div>
+    
+    <div class="field">
+      <%= c.label :bill_to  %><br />
+      <%= c.check_box :bill_to %>
+    </div>
+
+  <div class="actions">
+    <%= c.submit %>
+  </div>
+<% end %>
+

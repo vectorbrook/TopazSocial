@@ -1,0 +1,17 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <%= @topic.title %>
+</p>
+<p>
+  <% if @topic.posts.size > 0 -%>
+    Posts:
+    <% @topic.posts.each do |p| -%>
+      <%= p.body %>
+    <% end -%>
+  <% end -%>
+</p>
+
+<%= link_to "Add a Post" , new_forum_topic_post_path(@topic.forum,@topic) %>
+<%= link_to 'Edit', edit_forum_topic_path(@topic.forum,@topic) %> |
+<%= link_to 'Back', :back %>

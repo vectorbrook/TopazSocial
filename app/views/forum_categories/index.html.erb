@@ -1,0 +1,20 @@
+<h2>Categories</h2>
+<% for category in @categories %>
+  
+  <p>
+    <%= link_to category.name , edit_forum_category_path(category) %>
+    <%= link_to "Add Forum" , add_forum_path(category) %>
+    <% if category.is_enabled? -%>
+      <%= link_to "Disable" , disable_forum_category_path(category) %>
+    <% else -%>
+      <%= link_to "Enable" , enable_forum_category_path(category) %>
+    <% end -%>
+  </p>
+  
+<% end %>
+
+<br class="clear"/>
+
+<p><%= link_to "New Category", new_forum_category_path %></p>
+
+

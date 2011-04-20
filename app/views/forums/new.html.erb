@@ -1,0 +1,43 @@
+<h1>New Forum</h1>
+
+
+<%= form_for(@forum) do |f| %>
+  <% if @forum.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@forum.errors.count, "error") %> prohibited this forum from being saved:</h2>
+
+      <ul>
+      <% @forum.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+  
+  <% if @forum.forum_category_id and !@forum.forum_category_id.blank? -%>
+    <%= f.hidden_field :forum_category_id %>
+  <% else -%>
+    <%= f.label :category  %><br />
+    <%= f.select :forum_category_id ,options_from_collection_for_select(ForumCategory.active, "id" , "name"), :include_blank => false %>
+  <% end -%>
+  
+  <div class="field">
+    <%= f.label :name  %><br />
+    <%= f.text_field :name %>
+  </div>
+  
+  <div class="field">
+    <%= f.label :description  %><br />
+    <%= f.text_area :description %>
+  </div>  
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+  
+<% end %>
+
+<script type="text/javascript" >
+ 
+</script>
+

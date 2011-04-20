@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>TopazSocial.com</title>
+    <%= stylesheet_link_tag  'application' %>
+    <%= javascript_include_tag :defaults %>
+    <%= javascript_include_tag 'jquery.autocomplete' %>
+    <%= javascript_include_tag 'application' %>
+    <%= csrf_meta_tag %>
+    <%= yield(:head) %>
+  </head>
+  <body>
+    <div id="wrapper">
+      <div id="header">
+        <a href="/"><div id="logo"></div></a>
+        <div id="menu">
+	        <ul>
+            <li><a href="/" title="Home" class=<%= ( controller_name == "welcome" ) ? "selected_tab" : "" %>>Home</a></li>
+            <% if is_admin? -%>
+              <li><%= link_to "Employees" , employees_path , :class => ( ( controller_name == "users" and ( action_name == "employees" ) ) ? "selected_tab" : "" ) %></li>
+              <li><%= link_to "General Users" , non_employees_path, :class => ( ( controller_name == "users" and ( action_name == "non_employees" ) ) ? "selected_tab" : "" ) %></li>
+              <li><%= link_to "Forum Categories" , forum_categories_path , :class => ( ( controller_name == "forum_categories" ) ? "selected_tab" : "" ) %></li>
+              <li><%= link_to "Forums" , forums_path , :class => ( ( controller_name == "forums" )  ? "selected_tab" : "" ) %></li>
+              <li><%= link_to "Accounts" , accounts_path , :class => ( ( controller_name == "accounts" )  ? "selected_tab" : "" )%></li>
+              <li><%= link_to "Service Cases" , service_cases_path , :class => ( ( controller_name == "service_cases" ) ? "selected_tab" : "" )%></li>
+            <% end -%>
+            <% if is_employee? -%>
+              <li><%= link_to "My Cases" , my_cases_path , :class => ( ( controller_name == "users" and ( action_name == "my_cases" ) ) ? "selected_tab" : "" )%></li>
+            <% end -%>
+          </ul>
+        </div>
+        <div id="hnav">
+	        <% if current_user %>
+            Welcome <%=  link_to (current_user.name || "User") , edit_user_registration_path(current_user) %>!
+            <%= link_to "Sign Out", "" , { :title => "Log out", :onclick => "logout_click();return false;" } %>
+          <% else %>
+            <ul>
+              <li>Sign in using </li>
+              <li><%= link_to "Facebook", "/auth/facebook" %></li>
+	            <li><%= link_to "Twitter", "/auth/twitter" %></li>
+            </ul>
+            <ul class="list">
+              <li><%= link_to "Employee Login" , login_path %></li>
+            </ul>
+          <% end %>
+
+        </div>
+      </div> <!-- header -->
+
+      <div id="search">
+        <form id="s_sapps" class="formvbx" method="get" action="/welcome/quick_find">
+          <fieldset>
+            <input type="text" id="r" name="r" value="" size="20" onfocus="document.forms['s_sapps'].r.value='';" onblur="if (document.forms['s_sapps'].r.value == '') document.forms['s_sapps'].r.value='Quick Search';" class="required" />
+            <input type="hidden" id="res" name="res" value="<%= controller_name %>">
+            <input type="submit" id="search-submit" value="Search" />
+          </fieldset>
+        </form>
+      </div> <!-- search -->
+
+      <div id="main">
+
+        <div id="lsidebar">
+        </div> <!-- lsidebar end -->
+
+        <div id="content">
+
+          <%- flash.each do |name, msg| -%>
+            <% if name != "notice".to_sym -%>
+              <%= content_tag :div, msg + " Please try again.", :id => "flash_#{name}", :style => "color: #ff6600;" %>
+            <% else -%>
+              <%= content_tag :div, msg , :id => "flash_#{name}", :style => "color: #3399ff;" %>
+            <% end -%>
+          <%- end -%>
+
+          <!-- Landing Page-->
+          <%= yield %>
+          <!--Landing Page ends -->
+
+        </div><!-- content -->
+
+        <div id="rsidebar">
+        </div> <!-- rsidebar end -->
+
+
+      </div><!-- main -->
+
+      <br class="clear"/>
+
+      <div id="footer">
+
+        <br style="clear:both" />
+
+        <div id="footer_links">
+          <a href="/about.html">About Us</a> |
+          <a href="/contact.html">Contact Us</a> |
+          <a href="/privacy.html">Privacy Policy</a> |
+          <a href="/termsofservice.html">Terms of Service </a>
+        </div> <!-- footer links -->
+
+        <div id="copyr">
+          Copyright 2011 <a href="vectorbrook.com">Vector Brook IT Solutions Pvt. Ltd.</a>. All rights reserved.
+        </div>
+
+      </div> <!-- footer -->
+
+  </div> <!-- wrapper -->
+
+  <div id="fb-root"></div>
+
+  <script>
+    window.fbAsyncInit = function() {
+      FB.init({appId: '<%= FB_APP_ID %>', status: true, cookie: true,
+               xfbml: true});
+    };
+    (function() {
+      var e = document.createElement('script'); e.async = true;
+      e.src = document.location.protocol +
+        '//connect.facebook.net/en_US/all.js';
+      document.getElementById('fb-root').appendChild(e);
+    }());
+
+    $(function() {
+		  $( "#lsidebar" ).accordion({
+			  autoHeight: false,
+			  navigation: true
+		  });
+	  });
+
+  </script>
+
+
+  </body>
+</html>
+

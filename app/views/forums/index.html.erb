@@ -1,0 +1,36 @@
+<h2>Forums</h2>
+<% for forum in @forums %>
+  
+  <div class="sapp_feature">
+    <h4><%= link_to forum.name , edit_forum_path(forum) %></h4>
+    <h4><%= forum.forum_category.name %></h4>
+    <p><%= forum.description %></p>      
+  </div>
+  
+  <p>    
+    <% if forum.topics.size > 0 -%>
+      <p>
+        Topics:
+        <br />
+          <% forum.topics.each do |t| -%>
+            <%= link_to t.title , forum_topic_path(forum,t) %>
+          <% end -%>
+        <% end -%>
+      </p>      
+    <%= link_to "Add a Topic" , new_forum_topic_path(forum) %>
+    <% if forum.is_enabled? -%>
+      <%= link_to "Disable" , disable_forum_path(forum) %>
+    <% else -%>
+      <%= link_to "Enable" , enable_forum_path(forum) %>
+    <% end -%>
+  </p>
+  
+<% end %>
+
+<br class="clear"/>
+
+<p><%= link_to "New Forum", new_forum_path %></p>
+
+
+
+

@@ -1,0 +1,12 @@
+<h1>Assign Service Case <%= @service_case.name%></h1>
+
+<%= form_tag('/assign_case') do %>
+  <input type="hidden" id="service_case_id" name="service_case_id" value="<%= @service_case.id.to_s%>">
+  <div class="field">
+    <%= label_tag :employee %><br />
+    <%= select_tag :employee , options_from_collection_for_select(@employees, "id", "name")  %>
+  </div>
+  <div class="actions">
+    <%= submit_tag "Assign Case" %>
+  </div>
+<% end -%>

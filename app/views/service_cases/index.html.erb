@@ -1,0 +1,24 @@
+<h2>ServiceCases</h2>
+<% for service_case in @service_cases %>
+  
+  <div class="sapp_feature">
+    <h4><%= link_to service_case.name , service_case_path(service_case) %></h4>
+    <h4><%= service_case.account.name %></h4>
+    <h4><%= service_case.priority %></h4>
+    <h4><%= service_case.status %></h4>
+    <p><%= service_case.description %></p>      
+  </div>  
+  
+<% end %>
+
+<%= will_paginate @service_cases %>
+
+<%= page_entries_info @service_cases %>
+
+<br class="clear"/>
+
+<p><%= link_to "New ServiceCase", new_service_case_path %></p>
+
+
+
+

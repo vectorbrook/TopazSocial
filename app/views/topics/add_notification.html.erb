@@ -1,0 +1,6 @@
+<%= form_tag(add_feature_notification_path(@feature)) do -%>
+  <%= hidden_field_tag 'feature_id' , @feature.id.to_s %>
+  <h2>Notification for Feature: <%= @feature.name %></h2>
+  <%= text_area_tag 'commentary' %>
+  <div><%= submit_tag 'Save' %></div>
+<% end -%>
