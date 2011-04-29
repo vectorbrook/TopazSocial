@@ -20,7 +20,7 @@
 
 class Forum
   include MongoMapper::Document
-  include Notable
+  include Noteable
   include Enablable
   include Approvable
   include AccessControl

@@ -20,7 +20,7 @@
 
 class Account
   include MongoMapper::Document
-  #include Notable
+  #include Noteable
   include Enablable
   include AccessControl
  

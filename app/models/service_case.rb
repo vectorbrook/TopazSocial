@@ -21,7 +21,7 @@
 class ServiceCase
   include MongoMapper::Document
   include AccessControl
-  include Notable
+  include Noteable
   include Enablable
   
   key :name , String, :required => true

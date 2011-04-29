@@ -1,4 +1,4 @@
-module Notable
+module Noteable
   
   module ClassMethods
     
