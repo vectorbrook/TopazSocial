@@ -1,14 +1,19 @@
+<% content_for :breadcrumb do %>
+ <li class="active">General User Administration</li>
+<% end %>
 <h1>General  Users Administration</h1>
 
-<table>
+<table class="table-bordered table-hover">
   <tr>
     <th>Name</th>
+    <th>E-mail</th>
     <th></th>
   </tr>
 
 <% @users.each do |user| -%>
   <tr>
     <td><%= user.name || " " %></td>
+    <td><%= link_to user.email , edit_employee_path(user) %></td>
     <td>
       <% if user.access_locked? -%>
         <%= link_to "Enable" , enable_user_path(user) %>
@@ -19,3 +24,6 @@
   </tr>
 <% end -%>
 </table>
+
+
+

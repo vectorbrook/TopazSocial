@@ -1,0 +1,37 @@
+<% content_for :breadcrumb do %>
+ <li class="active">Customer Accounts</li>
+<% end %>
+<h2>Customer Accounts</h2>
+<table class="table table-bordered table-hover" >
+  <tr>
+    <th>Name</th>
+    <th>Type</th>
+    <th>Description</th>
+    <th>Edit</th>
+    <th>Add Site</th>
+    <th>Enable</th>
+  </tr>
+<% for customer_account in @customer_accounts %>
+  <tr>
+      <td><%= link_to customer_account.name , customer_account_customer_sites_path(customer_account) %></td>
+      <td><%= customer_account.ac_type %></td>
+      <td><%= customer_account.description %></td>    
+      <td><%= link_to customer_account.name , edit_customer_account_path(customer_account) %>
+      </td>
+      <td><%= link_to "Add a Site" , new_customer_account_customer_site_path(customer_account) %></td>
+      <td>
+        <% if customer_account.is_enabled? -%>
+          <%= link_to "Disable" , disable_account_path(customer_account) %>
+        <% else -%>
+          <%= link_to "Enable" , enable_account_path(customer_account) %>
+        <% end -%>
+      </td>
+  </tr>
+<% end %>
+</table>
+
+<p><%= link_to "New Account", new_customer_account_path %></p>
+
+
+
+

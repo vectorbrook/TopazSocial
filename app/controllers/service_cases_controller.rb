@@ -1,25 +1,6 @@
-# Topaz Social
-# Copyright (C) 2011 by Vector Brook
-#
-#
-# This file is part of Topaz Social.
-#
-# Topaz Social is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Topaz Social is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Topaz Social.  If not, see <http://www.gnu.org/licenses/agpl-3.0.html>.
-
-
 class ServiceCasesController < ApplicationController
-  before_filter :require_admin
+  load_and_authorize_resource
+  
   # GET /service_cases
   # GET /service_cases.xml
   def index
@@ -28,10 +9,40 @@ class ServiceCasesController < ApplicationController
     if params[:r]
       cond_ = {:name => /#{params[:r]}/i }
     end
-    @service_cases = ServiceCase.paginate :page => params[:page], :order => 'created_at DESC' , :conditions => cond_
+    @service_cases = ServiceCase.where(:name => /#{params[:r]}/i).order(:name).page params[:page]
 
     respond_to do |format|
       format.html # index.html.erb
+      format.xml  { render :xml => @service_cases }
+      format.js
+    end
+  end
+  
+  def unassigned_cases
+    #@service_cases = ServiceCase.all
+    cond_ = {}
+    if params[:r]
+      cond_ = {:name => /#{params[:r]}/i }
+    end
+    @service_cases = ServiceCase.unassigned.where(:name => /#{params[:r]}/i).order(:name).page params[:page]
+
+    respond_to do |format|
+      format.html { render :index }
+      format.xml  { render :xml => @service_cases }
+      format.js
+    end
+  end
+  
+  def assigned_cases
+    #@service_cases = ServiceCase.all
+    cond_ = {}
+    if params[:r]
+      cond_ = {:name => /#{params[:r]}/i }
+    end
+    @service_cases = ServiceCase.assigned.where(:name => /#{params[:r]}/i).order(:name).page params[:page]
+
+    respond_to do |format|
+      format.html { render :index }
       format.xml  { render :xml => @service_cases }
       format.js
     end
@@ -41,7 +52,11 @@ class ServiceCasesController < ApplicationController
   # GET /service_cases/1.xml
   def show
     @service_case = ServiceCase.find(params[:id])
-    @cust_interaction = ServiceCaseInteraction.new(:service_case => @service_case)
+    #@cust_interaction = ServiceCaseInteraction.new(:service_case => @service_case)
+    @interactions = @service_case.interactions
+    @interaction = Interaction.new(:context => "ServiceCase",:context_id => @service_case.id)
+    
+    session[:back_to] = service_case_path(@service_case)
 
     respond_to do |format|
       format.html # show.html.erb
@@ -81,8 +96,8 @@ class ServiceCasesController < ApplicationController
       
     rescue Exception => e
       
-      p "vvvvvvvvvvvvv"
-      p e.message
+      #p "vvvvvvvvvvvvv"
+      #p e.message
       @service_case.try(:delete)
       
       @service_case = ServiceCase.new(params[:service_case])
@@ -173,5 +188,30 @@ class ServiceCasesController < ApplicationController
       @employees = User.employees.active || []
     end
   end
+  
+  def add_log
+    if request.post?
+      begin
+        @service_case = ServiceCase.find(params[:service_case_id])
+        @service_case.service_case_logs.build(:log_text => params[:text], :user_id => current_user.id, :created_at => Time.now) if @service_case
+        @service_case.try(:save!)
+      rescue Exception => e
+        
+      end
+      redirect_to ( @service_case || root_path )
+    else
+      
+    end
+  end
+  
+  def my_cases
+    begin
+      (@service_cases = current_user.assigned_service_cases) + []
+    rescue NoMethodError => e
+       @service_cases = [@service_cases]
+    end
+    @service_cases
+  end
+  
   
 end

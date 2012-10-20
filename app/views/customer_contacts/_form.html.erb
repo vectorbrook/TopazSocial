@@ -1,0 +1,15 @@
+<%= simple_form_for([@customer_account,@customer_site,@customer_contact]) do |c| %>
+  <%= c.error_notification %>
+    <%= c.hidden_field :customer_site_id  %>
+    <%= c.input :first_name %>
+    <%= c.input :last_name %>
+    <%= c.input :phone_number1 %>
+    <%= c.input :fax_number %>
+    <%= c.input :email_addr %>
+    <%= c.input :sell_to, :as => :check_boxes %>
+    <%= c.input :ship_to, :as => :check_boxes %>
+    <%= c.input :bill_to, :as => :check_boxes %>
+    <%= c.button :submit %>
+  
+<% end %>
+

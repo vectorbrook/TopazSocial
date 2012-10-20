@@ -1,0 +1,42 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Customer Accounts", customer_accounts_path %> <span class="divider">/</span></li>
+   <li><%= link_to "Customer Site", customer_account_customer_sites_path(@customer_site.customer_account_id) %> <span class="divider">/</span></li>
+  <li class="active"><%= @customer_site.name %></li>
+<% end %>
+<p id="notice"><%= notice %></p>
+<table class="table table-bordered table-hover" >
+  <tr>
+    <th>Customer Site Name</th>
+    <th>Customer Site Full Address</th>
+  </tr>
+  <tr> 
+    <td><%= @customer_site.name %></td>
+    <td><%= @customer_site.full_address %></td>
+  </tr>
+</table>
+
+<table class="table table-bordered table-hover" >
+  <tr>
+    <th>Customer contact</th>
+  </tr>
+  <tr>
+     <td>
+      <% if @customer_site.customer_contacts.size > 0 -%>
+    
+        <% @customer_site.customer_contacts.each do |c| -%>
+      
+          <%= link_to c.full_name , edit_customer_account_customer_site_customer_contact_path(@customer_site.customer_account,@customer_site,c) %>
+     
+          <%= c.full_details %>
+     
+        <% end -%>
+    
+      <% end -%>
+  </tr>
+</table>
+
+<%= link_to "Add a Contact" , new_customer_account_customer_site_customer_contact_path(@customer_site.customer_account,@customer_site) %> |
+<%= link_to 'Edit', edit_customer_account_customer_site_path(@customer_site.customer_account,@customer_site) %> |
+<%= link_to 'Back', :back %><p id="notice"><%= notice %></p>
+
+

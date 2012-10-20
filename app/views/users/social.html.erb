@@ -1,0 +1,78 @@
+<style>
+  .selected_div{
+    display: inline;
+  }
+  .hidden_div{
+    display: none;
+  }
+  .selected_span{
+    display: block;
+    height: auto;
+  }
+  .hidden_span{
+    display: none;
+    height: 0;
+  }
+  .originalTextareaInfo {
+				font-size: 12px;
+				color: #000000;
+				font-family: Tahoma, sans-serif;
+				width: 200px;
+			}
+
+			.warningTextareaInfo {
+				font-size: 12px;
+				color: #FF0000;
+				font-family: Tahoma, sans-serif;
+				text-align: right
+			}
+
+			#showData {
+				height: 70px;
+				width: 200px;
+				border: 1px solid #CCCCCC;
+				padding: 10px;
+				margin: 10px;
+			}
+
+</style>
+
+<% if @twitter_avlbl -%>
+
+  <br />
+  <p>
+  Mentions:
+  <br />
+  <% @lists.each do |l| -%>
+    <br />
+    <%= l.text %>
+  <% end -%>
+  </p>
+  
+  <%= form_tag(do_tweet_path)  do |f| -%>
+    <%= text_area_tag :content, '', {  :class => "" , :rows => "7" , :maxlength => "140" , :id => "content_box" }  %>
+    <label>max chars 140</label>
+    <%= submit_tag 'Tweet!' %>
+  <% end -%>
+  
+<% else %>
+  Sign in <a href="<%= user_omniauth_authorize_path(:twitter) %>">
+    <%= image_tag "tw.png" %> 
+  </a>
+<% end -%>
+
+<script type="text/javascript">   
+
+    $(document).ready(function () {
+      //alert("hi   a");
+      var options2 = {
+						'maxCharacterSize': 140,
+						'originalStyle': 'originalTextareaInfo',
+						'warningStyle' : 'warningTextareaInfo',
+						'warningNumber': 40,
+						'displayFormat' : '#left'
+				};
+      $("#content_box").textareaCount(options2);
+    });
+    
+</script>

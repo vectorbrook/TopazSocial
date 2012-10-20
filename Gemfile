@@ -1,22 +1,48 @@
 source 'http://rubygems.org'
 
-gem 'rails' #, '3.0.3'
+gem 'rails', '3.2.8'
 
-gem 'bson' #,'1.1.4'
-gem 'bson_ext' #,'1.1.4'
-gem 'mongo' #,'1.1.4'
-gem 'mongo_mapper', '0.8.6'
+# Bundle edge Rails instead:
+# gem 'rails',     :git => 'git://github.com/rails/rails.git'
 
-gem 'devise', '1.1.7'
-gem 'mm-devise'
-gem "omniauth"
+
+gem 'bson'
+gem 'bson_ext'
+gem 'mongo'
+gem 'mongo_mapper','0.11.2'
+
+gem 'json'
+
+gem 'devise','2.1.2'
+gem 'devise-encryptable'
+gem 'cancan'
+
+gem 'simple_form'
+gem 'country_select'
+
+gem 'omniauth', '>=0.2.0.beta'
+
+gem 'omniauth-twitter'
+
+gem 'twitter'
+
+gem 'kaminari'
+
+# Gems used only for assets and not required
+# in production environments by default.
+group :assets do
+  gem 'sass-rails'
+  gem 'coffee-rails'
+  gem 'uglifier'
+end
 
 gem 'jquery-rails'
 
-gem 'will_paginate', '3.0.pre2' 
-# Bundle edge Rails instead:
-# gem 'rails', :git => 'git://github.com/rails/rails.git'
+#gem 'client_side_validations'
+#gem 'client_side_validations-mongo_mapper'
 
+# To use ActiveModel has_secure_password
+# gem 'bcrypt-ruby', '~> 3.0.0'
 
 # Use unicorn as the web server
 # gem 'unicorn'
@@ -24,24 +50,19 @@ gem 'will_paginate', '3.0.pre2'
 # Deploy with Capistrano
 # gem 'capistrano'
 
-# To use debugger (ruby-debug for Ruby 1.8.7+, ruby-debug19 for Ruby 1.9.2+)
-# gem 'ruby-debug'
-# gem 'ruby-debug19'
+# To use debugger
+# gem 'ruby-debug19', :require => 'ruby-debug'
 
-# Bundle the extra gems:
-# gem 'bj'
-# gem 'nokogiri'
-# gem 'sqlite3-ruby', :require => 'sqlite3'
-# gem 'aws-s3', :require => 'aws/s3'
+group :development do
+  gem 'thin', '1.3.1'
+end
 
-gem "mongrel"
-
-# Bundle gems for the local environment. Make sure to
-# put test-only gems in this group so their generators
-# and rake tasks are available in development mode:
-group :development, :test do
-  gem "rspec-rails"
-  gem "cucumber-rails"
-  gem "webrat"
-  gem "mocha"
+group :test do
+  # Pretty printed test output
+  #gem "minitest"
+  gem "factory_girl_rails", "~> 1.4.0"
+  gem "database_cleaner", "~> 0.7.0"
+  gem "capybara", "~> 1.1.2"
+  #gem "capybara_minitest_spec"
+  gem "turn", "~> 0.8.3", :require => false
 end

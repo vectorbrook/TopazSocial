@@ -1,0 +1,46 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Forums", forums_path %> <span class="divider">/</span></li>
+  <li><%= link_to "Forum Topics", forum_forum_topics_path(@topic.forum) %> <span class="divider">/</span></li>
+  <li class="active">  <%= @topic.title %></li>
+<% end %>
+<table class="table table-bordered table-hover" >
+  <h3><%= @topic.title %></h3>
+  <tr>
+    <th>Created Time</th>
+    <th>Updated Time</th>
+    <th>Posts</th>
+    <th></th>
+    <th></th>
+  </tr>
+    <% if @interactions.size > 0 -%>
+      <% @interactions.each do |p| -%>
+        <tr>
+          <td><%= p.created_at %></td>
+          <td><%= p.updated_at %></td>
+          <td><%= p.body %></td>
+          <td><%= link_to 'Edit Post', edit_interaction_path(p) %></td>
+          <td><%= link_to 'Delete Post', interaction_path(p) , :method => :delete , :confirm => "Are you sure?"%></td>
+        </tr> 
+        <% end -%>
+       
+      <% end -%>
+      
+    
+ 
+</table>
+
+<%= simple_form_for(@interaction) do |f| %>
+  <%= f.error_notification %>
+  
+  
+    <%= f.hidden_field :context_id  %>
+    <%= f.hidden_field :context  %>
+    <%= f.input :body, :as => :text, :input_html => {:size => "60x8"} %>
+  
+    <%= f.submit "Add a Post" %>
+  
+<% end %>
+
+<!-- <%= link_to "Add a Post" , new_forum_topic_interaction_path(@topic) %> -->
+
+

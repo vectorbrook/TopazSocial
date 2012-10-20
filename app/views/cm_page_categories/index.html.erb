@@ -1,0 +1,34 @@
+<% content_for :breadcrumb do %>
+ <li class="active">Content Marketing Page Categories</li>
+<% end %>
+
+<h2>Categories</h2>
+<table class="table table-bordered table-hover">
+  <tr>
+    <th>Name</th>
+    <th>Ancestry</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+  
+    <% for category in @cm_page_categories %>
+      <tr>
+        <td><%= link_to category.name , cm_page_category_path(category) %></td>
+        <td><%= category.ancestry.join(' -> ') %></td>
+        <td><%= link_to "Add Page" , new_cm_page_path(:cm_page_category => category) %></td>
+        <td><%= link_to "Edit" , edit_cm_page_category_path(category) %></td>          
+        <td><% if category.is_enabled? -%>
+          <%= link_to "Disable" , disable_cm_page_category_path(category) %>
+        <% else -%>
+          <%= link_to "Enable" , enable_cm_page_category_path(category) %>
+        <% end -%></td>
+      </tr>
+    <% end %>
+  
+</table>
+
+
+<p><%= link_to "New Content Marketing Page Category", new_cm_page_category_path %></p>
+
+

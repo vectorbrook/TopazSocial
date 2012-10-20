@@ -1,29 +1,8 @@
-# Topaz Social
-# Copyright (C) 2011 by Vector Brook
-#
-#
-# This file is part of Topaz Social.
-#
-# Topaz Social is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Topaz Social is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Topaz Social.  If not, see <http://www.gnu.org/licenses/agpl-3.0.html>.
-
-
 class Forum
   include MongoMapper::Document
   include Noteable
   include Enablable
   include Approvable
-  include AccessControl
   include Permalink
 
   key :name,               String,    :required => true
@@ -40,9 +19,9 @@ class Forum
   has_permalink_on :name
 
   belongs_to :forum_category
-  many :topics
+  many :forum_topics
 
-  attr_accessible :name , :description, :forum_category
+  attr_accessible :name , :description, :forum_category_id
 
   cattr_reader :per_page
   @@per_page = 3
@@ -50,9 +29,6 @@ class Forum
   scope :active,   where(:enabled => true , :approved => true )
   scope :pending,  where(:enabled => true , :approved => false , :approved_by => nil)
   scope :disabled, where(:enabled => false , :approved => true )
-
-  privilegify  "admin",       ["all"]
-  privilegify  ["approver"],  ["enable","disable","approve","disapprove"]
 
   def topic_added(save_=true)
     self.topics_count = self.topics_count + 1
@@ -96,9 +72,9 @@ class Forum
   def name_duplicity_within_category
     name_ = self.name
     forums_ = nil
-    forums_ = Forum.where(:name => /#{name_}/i,:forum_category_id => self.forum_category.id).all if ( name_ and !name_.empty? )
-    if forums_ and !forums_.empty?
-      errors.add_to_base("Forum with a same name already exists.")
+    forums_ = Forum.where(:name => /#{name_}/i,:forum_category_id => self.forum_category_id).all if ( name_ and !name_.empty? )
+    if self.new_record? and forums_ and !forums_.empty?
+      errors.add(:base, "Forum with a same name already exists.")
     end
   end
 

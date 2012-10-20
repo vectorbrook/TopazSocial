@@ -1,66 +1,93 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Service Cases", service_cases_path  %> <span class="divider">/</span></li>
+  
+  <li class="active"><%= @service_case.name %></li>
+<% end %>
 <p id="notice"><%= notice %></p>
 <h1><%= @service_case.name %></h1>
-
-  <div class="sapp_feature">
-    <h4><%= @service_case.name %></h4>
-    <h4><%= @service_case.account.name %></h4>
-    <h4><%= @service_case.priority %></h4>
-    <h4><%= @service_case.status %></h4>
-    <p><%= @service_case.description %></p>
-  </div>
+<table class="table table-bordered table-hover" >
+  <tr>
+    <th>Name</th>
+    <th>Customer Account Name</th>
+    <th>Priority</th>
+    <th>Status</th>
+    <th>Description</th>
+    
+  </tr>
+  <tr>
+    <td><%= @service_case.name %></td>
+    <td><%= @service_case.customer_account.name %></td>
+    <td><%= @service_case.priority %></td>
+    <td><%= @service_case.status %></td>
+    <td><%= @service_case.description %></td>
+ </tr>
+</table> 
   
-  <p>
+    
     <% if @service_case.service_case_logs.size > 0 -%>
-      <p>
-        Case History:
-        <br />
-        <% @service_case.service_case_logs.each do |t| -%>
-          <%= t.log_text %>
-          <br />
-          <%= t.created_at %>
-          <br />
+      <h3>Case History</h3>
+      <table class="table table-bordered table-hover" >
+        <tr>
+          <th>Log Text</th>
+          <th>Created at</th>
+        </tr>
+          <% @service_case.service_case_logs.each do |t| -%>
+            <tr>
+              <td><%= t.log_text %></td>
+              <td><%= t.created_at %></td>
+            </tr>
         <% end -%>
-      </p>
+      </table>
     <% end -%>
-  </p>
+   
+    <% if @service_case.interactions.size > 0 -%>
+      <h3>Customer Interaction</h3>
+      <table class="table table-bordered table-hover" >
+        <tr>
+          <th>Body</th>
+          <th>status</th>
+          <th>Solution</th>
+          <th>Created at</th>
+        </tr>
+        <% @service_case.interactions.each do |t| -%>
+          <tr>
+            <td><%= t.body %></td>
+            <td><%= t.status %></td>
+            <td><%= t.solution %></td>
+            <td><%= t.created_at %></td>
+          </tr>
+        <% end -%>
+      </table>
+    <% end -%>
+   
   
-  <p>
-    <% if @service_case.service_case_interactions.size > 0 -%>
-      <p>
-        Customer Interaction:
-        <br />
-        <% @service_case.service_case_interactions.each do |t| -%>
-          <%= t.description %>
-          <br />
-          <%= t.status %>
-          <br />
-          <%= t.solution %>
-          <br />
-          <%= t.created_at %>
+      <h4>Add new Customer Interaction:</h4>
+        <%= simple_form_for(@interaction) do |f| %>
+          <%= f.hidden_field :context_id  %>
+          <%= f.hidden_field :context  %>
+          <%= f.input :body, :as => :text, :input_html => {:size => "60x8"} %>
+          <%= f.input :status %>
+          <%= f.input :solution %>
+          <%= f.submit "Add Interaction" %>
         <% end -%>
-      </p>
-    <% end -%>
+   
+    
     <p>
-      <h4>Add new interaction:</h4>
-      <%= form_tag('/add_interaction') do %>
-        <input type="hidden" id="service_case_id" name="service_case_id" value="<%= @service_case.id.to_s%>">
+      <h4>Case Log Entry:</h4>
+      <%= form_tag('/add_log') do |f| %>
         <div class="field">
-          <%= label_tag :description  %><br />
-          <%= text_area_tag :description %>
-        </div>
+          <%= hidden_field_tag :service_case_id, @service_case.id  %>
+        </div>        
         <div class="field">
-          <%= label_tag :status  %><br />
-          <%= text_field_tag :status %>
-        </div>
-        <div class="field">
-          <%= label_tag :solution  %><br />
-          <%= text_area_tag :solution %>
+          <%= label_tag :Text  %><br />
+          <%= text_area_tag :text %>
         </div>
         <div class="actions">
-          <%= submit_tag "Add Interaction" %>
+          <%= submit_tag "Add Log Entry" %>
         </div>
       <% end -%>
     </p>
+    
   </p>
 
 <%= link_to "Assign" , assign_case_path(@service_case)%>

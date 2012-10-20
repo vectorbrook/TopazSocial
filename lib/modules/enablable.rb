@@ -11,12 +11,12 @@ module Enablable
     end
 
     def enable(user)
-      return false unless Util.is_What(user,"User") and self.class.is_permitted(user.role,"enable")
+      return false unless Util.is_What(user,"User") #and can(:enable, self) #self.class.is_permitted(user.role,"enable")
       return change_enable_status("true",user)
     end
 
     def disable(user)
-      return false unless Util.is_What(user,"User") and self.class.is_permitted(user.role,"disable")
+      return false unless Util.is_What(user,"User") #and can(:disable, self) # self.class.is_permitted(user.role,"disable")
       return change_enable_status("false",user)
     end
 

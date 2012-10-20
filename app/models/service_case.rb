@@ -1,26 +1,5 @@
-# Topaz Social
-# Copyright (C) 2011 by Vector Brook
-#
-#
-# This file is part of Topaz Social.
-#
-# Topaz Social is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Topaz Social is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Topaz Social.  If not, see <http://www.gnu.org/licenses/agpl-3.0.html>.
-
-
 class ServiceCase
   include MongoMapper::Document
-  include AccessControl
   include Noteable
   include Enablable
   
@@ -33,22 +12,21 @@ class ServiceCase
   key :solution , String
   key :created_by, ObjectId  , :required => true
   key :assigned_to, ObjectId
-  key :account_id, ObjectId , :required => true
-  key :contact_id, ObjectId
+  key :customer_account_id, ObjectId , :required => true
+  key :customer_contact_id, ObjectId
   key :visible_to, Array, :typecast => 'ObjectId'
   key :tags, Array, :typecast => 'String'
-  #key :notes,  Array, :typecast => 'String'
-  #key :enabled, Boolean, :required => true
 
   timestamps!
 
-  belongs_to :account
+  belongs_to :customer_account
   many :service_case_logs
-  many :service_case_interactions
   
-  privilegify "admin",["all"]
+  scope :assigned, where(:assigned_to.ne => nil)
+  scope :unassigned, where(:assigned_to => nil)
   
-  before_save :make_log_entry
+  
+  #before_save :make_log_entry
   
   cattr_reader :per_page
   @@per_page = 3
@@ -63,10 +41,24 @@ class ServiceCase
     return assign_to_(user_id)
   end
   
+  def interactions
+    Interaction.all(:context => "ServiceCase", :context_id => id)
+  end
+  
+  def assigned?
+    self.assigned_to != nil
+  end
+  
+  def assigned_user_name(user_id)
+    u = User.find(user_id)
+    u.name
+  end
+    
+  
   protected
   
   def make_log_entry
-    self.service_case_logs.build(:log_text => self.changes.inspect , :created_at => Time.now)
+    self.service_case_logs.build(:log_text => self.changes.to_a , :created_at => Time.now)
   end
   
   def assign_to_(user_id)

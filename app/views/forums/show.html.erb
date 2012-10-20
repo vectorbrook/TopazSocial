@@ -1,17 +1,27 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Forums", forums_path %> <span class="divider">/</span></li>
+  <li class="active"><%= @forum.name %> </li>
+<% end %>
 <p id="notice"><%= notice %></p>
-
-<p>
-  <%= @forum.name %>
-</p>
-<p>
-  <% if @forum.topics.size > 0 -%>
-    Topics:
-    <% @forum.topics.each do |t| -%>
-      <%= link_to t.title , t %>
-    <% end -%>
-  <% end -%>
-</p>
+<table class="table table-bordered table-hover" >
+  <tr>
+    <th>Forum Name</th>
+    <th>Topics</th>
+  </tr>
+  <tr>
+    <td><%= @forum.name %></td>
+    <td>
+      <% if @forum.forum_topics.size > 0 -%>
+       
+        <% @forum.forum_topics.each do |t| -%>
+          <%= link_to t.title , forum_forum_topic_path(@forum,t) %>
+        <% end -%>
+      <% end -%>
+    </td>
+  </tr>
+</table>
 
 
 <%= link_to 'Edit', edit_forum_path(@forum) %> |
 <%= link_to 'Back', :back %>
+

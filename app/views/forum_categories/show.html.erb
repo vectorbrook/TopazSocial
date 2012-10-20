@@ -1,6 +1,10 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Forum Category", forum_categories_path %> <span class="divider">/</span></li>
+  <li class="active"><%= @category.name %> </li>
+<% end %>
 <p id="notice"><%= notice %></p>
 
-<p> <%=   @forum.name %></p>
+<p> <%= @category.name %></p>
 
-<%= link_to 'Edit', edit_forum_path(@forum) %> |
+<%= link_to 'Edit', edit_forum_category_path(@category) %> |
 <%= link_to 'Back', :back %>

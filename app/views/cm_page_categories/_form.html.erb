@@ -1,0 +1,10 @@
+
+<% p @cm_page_category -%>
+<%= simple_form_for(@cm_page_category) do |f| %>
+  <%= f.error_notification %>
+  <%= f.input :parent_category_id, :collection => CmPageCategory.active.all.collect {|p| [p.name,p.id]}, :include_blank => true %> &nbsp;leave blank if this is a root category.
+  <%= f.input :name %>
+  <%= f.input :description, :as => :text, :input_html => {:size => "60x8"} %>
+  <%= f.button :submit %>
+<% end %>
+

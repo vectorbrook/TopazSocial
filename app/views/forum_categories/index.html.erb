@@ -1,19 +1,28 @@
-<h2>Categories</h2>
-<% for category in @categories %>
-  
-  <p>
-    <%= link_to category.name , edit_forum_category_path(category) %>
-    <%= link_to "Add Forum" , add_forum_path(category) %>
-    <% if category.is_enabled? -%>
-      <%= link_to "Disable" , disable_forum_category_path(category) %>
-    <% else -%>
-      <%= link_to "Enable" , enable_forum_category_path(category) %>
-    <% end -%>
-  </p>
-  
+<% content_for :breadcrumb do %>
+ <li class="active">Forum Category</li>
 <% end %>
+<h2>Categories</h2>
+<table class="table table-bordered table-hover">
+  <tr>
+    <th>Name</th>
+    <th></th>
+    <th></th>
+  </tr>
+  
+    <% for category in @categories %>
+      <tr>
+        <td><%= link_to category.name , edit_forum_category_path(category) %></td>
+        <td><%= link_to "Add Forum" , add_forum_path(category) %></td>
+        <td><% if category.is_enabled? -%>
+          <%= link_to "Disable" , disable_forum_category_path(category) %>
+        <% else -%>
+          <%= link_to "Enable" , enable_forum_category_path(category) %>
+        <% end -%></td>
+      </tr>
+    <% end %>
+  
+</table>
 
-<br class="clear"/>
 
 <p><%= link_to "New Category", new_forum_category_path %></p>
 

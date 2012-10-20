@@ -1,0 +1,9 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Content Marketing Pages", cm_pages_path %> <span class="divider">/</span></li>
+  <li class="active">Edit Page</li>
+<% end %>
+<h1>Editing <%= @cm_page.title %></h1>
+
+<%= render 'form' %>
+
+<%= link_to 'Back', :back %>

@@ -1,0 +1,28 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Forums", forums_path %> <span class="divider">/</span></li>
+  <li class="active">Forum Topic </li>
+<% end %>
+<%= link_to "Add a Topic" , new_forum_forum_topic_path(@forum) %>
+
+<% if @topics -%>
+<table class="table table-bordered table hover">
+<tr>
+  <th>Title</th>
+</tr>
+
+  <% @topics.each do |t| -%>
+    <tr>
+      <td><%= link_to t.title, forum_forum_topic_path(t.forum.id,t.id)  %></td>
+      <td><%= link_to 'Edit Topic', edit_forum_forum_topic_path(t.forum.id,t.id) %></td>
+    </tr>
+  <% end -%>
+
+</table>
+
+
+
+<% end -%>
+
+
+
+

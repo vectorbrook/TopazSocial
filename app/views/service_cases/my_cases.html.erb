@@ -1,0 +1,27 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Service Cases", service_cases_path %> <span class="divider">/</span></li>
+  <li class="active">My Service Cases</li>
+<% end %>
+<h2>My ServiceCases</h2>
+<% if @service_cases.size > 0 -%>
+<table class="table table-bordered table-hover" >
+  <tr>
+    <th>service case name</th>
+    <th>Customer Account Name</th>
+    <th>Priority</th>
+    <th>Status</th>
+    <th>Description</th>
+  </tr>
+<% for service_case in @service_cases %>
+  <tr>
+  
+    <td><%= link_to service_case.name , service_case_path(service_case) %></td>
+    <td><%= service_case.customer_account.name %></td>
+    <td><%= service_case.priority %></td>
+    <td><%= service_case.status %></td>
+    <td><%= service_case.description %></td>      
+  </tr>
+  
+<% end %>
+</table>
+<% end -%>

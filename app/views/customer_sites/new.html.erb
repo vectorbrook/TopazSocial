@@ -1,0 +1,9 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Customer Accounts", customer_accounts_path %> <span class="divider">/</span></li>
+ 
+  <li class="active">New Customer Site</li>
+<% end %>
+<p>Add a Site to <%= @customer_account.name %></p>
+
+<%= render 'form' %>
+

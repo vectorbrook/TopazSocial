@@ -1,3 +1,7 @@
+<% content_for :breadcrumb do %>
+<li><%= link_to "Service Case", service_cases_path %> <span class="divider">/</span></li>
+ <li class="active">Reassigned Service Case</li>
+<% end %>
 <h1>Assign Service Case <%= @service_case.name%></h1>
 
 <%= form_tag('/assign_case') do %>

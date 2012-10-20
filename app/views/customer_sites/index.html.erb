@@ -1,0 +1,40 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Customer Accounts", customer_accounts_path %> <span class="divider">/</span></li>
+  <li class="active">Customer Sites</li>
+<% end %>
+<h2>Customer Sites for <%= @customer_account.name %></h2>
+<table class="table table-bordered table-hover" >
+  <tr>
+    <th>Name</th>
+    <th>Description</th>
+    <th>Address</th>
+    <th>Edit Customer Contact</th>
+    <th>Edit Customer Site</th>
+    <th>Add Contact</th>
+  </tr>
+  <% if @customer_sites.size > 0 -%>
+    <% @customer_sites.each do |t| -%>
+      <tr>
+        <td><%= link_to t.name , customer_account_customer_site_path(@customer_account,t) %>
+        </td>
+        <td><%= t.description %></td>
+        <td><%= t.full_address %></td>
+        <td>
+          <% if t.customer_contacts.size > 0 -%>
+            <% t.customer_contacts.each do |c| -%>
+              <%= link_to c.full_name , edit_customer_account_customer_site_customer_contact_path(@customer_account,t,c) %>
+            <% end -%>
+          <% end -%>
+        </td>
+        <td><%= link_to t.name , edit_customer_account_customer_site_path(@customer_account,t) %>
+        </td>
+        <td><%= link_to "Add a Contact" , new_customer_account_customer_site_customer_contact_path(@customer_account,t) %>
+        </td>
+      </tr>
+    <% end -%>
+  <% end -%>
+
+</table>
+
+<%= link_to "Add a Site" , new_customer_account_customer_site_path(@customer_account) %>
+

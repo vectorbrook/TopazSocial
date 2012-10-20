@@ -1,25 +1,8 @@
-# Topaz Social
-# Copyright (C) 2011 by Vector Brook
-#
-#
-# This file is part of Topaz Social.
-#
-# Topaz Social is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Topaz Social is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Topaz Social.  If not, see <http://www.gnu.org/licenses/agpl-3.0.html>.
-
-
 class ForumsController < ApplicationController
-  before_filter :require_admin
+  
+  load_and_authorize_resource
+  
+  #before_filter :require_admin, :except => [:index,:show]
   # GET /forums
   # GET /forums.xml
   def index
@@ -28,7 +11,7 @@ class ForumsController < ApplicationController
     if params[:r]
       cond_ = {:name => /#{params[:r]}/i }
     end
-    @forums = Forum.paginate :page => params[:page], :order => 'created_at DESC' , :conditions => cond_
+    @forums = Forum.where(:name => /#{params[:r]}/i).order(:name).page params[:page]
 
     respond_to do |format|
       format.html # index.html.erb
@@ -66,9 +49,7 @@ class ForumsController < ApplicationController
   # POST /forums
   # POST /forums.xml
   def create
-    p "ccccccccccc"
     @forum = Forum.new(params[:forum])
-    p @forum
 
     respond_to do |format|
       if @forum.save
@@ -108,17 +89,30 @@ class ForumsController < ApplicationController
       format.xml  { head :ok }
     end
   end
-  
+
   def enable
     @forum = Forum.find(params[:id])
     @forum.save! if @forum.try(:enable,current_user)
-    redirect_to forums_path  
+    redirect_to forums_path
   end
-  
+
    def disable
     @forum = Forum.find(params[:id])
     @forum.save! if @forum.try(:disable,current_user)
     redirect_to forums_path
   end
   
+  def approve
+    @forum = Forum.find(params[:id])
+    @forum.save! if @forum.try(:approve,current_user)
+    redirect_to forums_path
+  end
+
+   def reject
+    @forum = Forum.find(params[:id])
+    @forum.save! if @forum.try(:disapprove,current_user)
+    redirect_to forums_path
+  end
+
 end
+

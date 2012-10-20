@@ -1,0 +1,9 @@
+<%= simple_form_for(@interaction) do |f| %>
+   <%= f.error_notification %>
+    <%= f.hidden_field :context_id  %>
+    <%= f.hidden_field :context  %>
+    <%= f.input :body %>
+
+    <%= f.button :submit %>
+ 
+<% end %>

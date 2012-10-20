@@ -1,41 +1,55 @@
-<h2>Edit <%= resource_name.to_s.humanize %></h2>
+<h2>Edit <%= resource_name.to_s.humanize %> Settings:</h2>
 
 <%= form_for(resource, :as => resource_name, :url => registration_path(resource_name), :html => { :method => :put }) do |f| %>
   <%= devise_error_messages! %>
 
   <p><%= f.label :name %><br />
   <%= f.text_field :name %></p>
-  
-  <p><%= f.label :email %><br />
-  <%= f.text_field :email %></p>
 
-  <p><%= f.label :password %> <i>(leave blank if you don't want to change it)</i><br />
-  <%= f.password_field :password %></p>
+  <% if is_employee? -%>
+    <p><%= f.label :email %><br />
+    <%= f.text_field :email %></p>
 
-  <p><%= f.label :password_confirmation %><br />
-  <%= f.password_field :password_confirmation %></p>
+    <p><%= f.label :password %> <i>(leave blank if you don't want to change it)</i><br />
+    <%= f.password_field :password %></p>
 
-  <p><%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i><br />
-  <%= f.password_field :current_password %></p>
-  
+    <p><%= f.label :password_confirmation %><br />
+    <%= f.password_field :password_confirmation %></p>
+
+    <p><%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i><br />
+    <%= f.password_field :current_password %></p>
+  <% end -%>
+
   <% if is_admin? %>
     <p>
-      <%= f.label :role11 %>: 
+      <%= f.label :role11 %>:
       <input id="user_role_" name="user[role][]" type="hidden" value="" />
       <ul>
         <% ROLES.each do |role| -%>
           <li>
             <label for="user_role_<%= role %>">
-              <input id="user_role_<%= role %>" name="user[role][]" type="checkbox" value="<%= role %>" <%= (resource.role.include? role) ? "checked='checked'" : "" %> /> 
+              <input id="user_role_<%= role %>" name="user[role][]" type="checkbox" value="<%= role %>" <%= (resource.role.include? role) ? "checked='checked'" : "" %> />
               <%= role.titleize %>
             </label>
           </li>
-        <% end -%>        
+        <% end -%>
       </ul>
     </p>
   <% end %>
+
+  <h4>Social Accounts:</h4>
+  <p>
+    <a href="<%= user_omniauth_authorize_path(:twitter) %>"><img src="/images/tw.png" alt="Twitter" /></a>
+    <% if @user.twitter_uid and !@user.twitter_uid.empty? -%>
+      <br />
+      <label>There is an Twitter account already associated.</label>
+      <%= link_to "Clear this association." , clear_path('twitter',@user) %>
+    <% end -%>
+  </p>
+  <label>Please note that associating another provider account will not overwrite existing provider account details. To do so, please clear this provider assoociation first.</label>
 
   <p><%= f.submit "Update" %></p>
 <% end %>
 
 <%= link_to "Back", :back %>
+

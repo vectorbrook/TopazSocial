@@ -1,0 +1,9 @@
+<%= simple_form_for(@cm_page) do |f| %>
+  <%= f.error_notification %>
+    <%= f.input :cm_page_category_id, :collection => CmPageCategory.active.all.collect {|p| [p.name,p.id]} %>
+    <%= f.input :title %>
+    <%= f.input :content, :as => :text, :input_html => {:size => "60x8"} %>
+  
+    <%= f.button :submit %>
+<% end %>
+

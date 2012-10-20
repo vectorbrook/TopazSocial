@@ -1,36 +1,19 @@
-# Topaz Social
-# Copyright (C) 2011 by Vector Brook
-#
-#
-# This file is part of Topaz Social.
-#
-# Topaz Social is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Topaz Social is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Topaz Social.  If not, see <http://www.gnu.org/licenses/agpl-3.0.html>.
-
-
 class UsersController < ApplicationController
-  before_filter :require_admin , :only => [:employees,:non_employees,:edit_employee]
-  before_filter :require_user , :only => [:follow,:unfollow,:remove_follower,:accept,:decline]
-  before_filter :require_employee , :only => [:my_cases]
   
+  load_and_authorize_resource
+  
+  #before_filter :require_admin , :only => [:employees,:non_employees,:edit_employee,:enable_user,:disable_user]
+  #before_filter :require_user , :only => [:follow,:unfollow,:remove_follower,:accept,:decline,:clear_provider_details,:social]
+  #before_filter :require_employee , :only => [:my_cases]
+
   def employees
     @users = User.where(:role => "employee").all
   end
-  
+
   def non_employees
     @users = User.all - User.where(:role => "employee").all
   end
-  
+
   def edit_employee
     @user = User.find params[:id]
     if request.put?
@@ -42,9 +25,9 @@ class UsersController < ApplicationController
       end
     else
       render :edit_employee
-    end    
+    end
   end
-  
+
   def disable_user
     user = User.find params[:id]
     if user
@@ -67,21 +50,12 @@ class UsersController < ApplicationController
       redirect_to root_url
     end
   end
-  
-  def my_cases
-    begin
-      (@service_cases = current_user.assigned_service_cases) + []
-    rescue NoMethodError => e
-       @service_cases = [@service_cases]
-    end
-    @service_cases
-  end
-  
+
   (%w[follow unfollow remove_follower accept decline]).each do |user_action|
     class_eval <<-METHODS, __FILE__, __LINE__ + 1
       def #{user_action}
         begin
-          current_user.try( #{user_action}.to_sym,( params[:id] || nil ) )
+          current_user.send( #{user_action}.to_sym,( params[:id] || nil ) )
         rescue Exception => e
           #TODO
         end
@@ -89,5 +63,40 @@ class UsersController < ApplicationController
       end
     METHODS
   end
+
+  def clear_provider_details
+    _user = ( params[:id] == current_user.id ) ? current_user : User.find( params[:id])
+    if _user and _user.can_clear_provider_account?
+      User::PROVIDER_FIELDS.each do |f|
+        _user.send("#{params[:provider]}_#{f}=".to_sym, nil)
+      end
+      _user.save
+      flash[:notice] = "#{params[:provider].camelize} association cleared."
+    else
+      if _user
+        flash[:notice] = "How will you login? Sorry. Can't burn this bridge."
+      else
+        flash[:notice] = "Could not find the account. Try again."
+      end
+    end
+    redirect_to :back
+  end
   
+  def social
+    @twitter_avlbl = false
+    if current_user and session[:twitter_token] and !session[:twitter_token].blank?
+      @twitter_avlbl = true
+      @lists = []
+      @lists = current_user.twitter_client.mentions
+    end
+  end
+  
+  def do_tweet
+    if current_user and session[:twitter_token] and !session[:twitter_token].blank? and !params[:content].blank?
+      current_user.twitter_client.update(params[:content])
+    end
+    redirect_to social_path
+  end
+
 end
+

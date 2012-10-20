@@ -1,42 +1,18 @@
-<%= form_for(@forum) do |f| %>
-  <% if @forum.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@forum.errors.count, "error") %> prohibited this forum from being saved:</h2>
-
-      <ul>
-      <% @forum.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
-  
+<%= simple_form_for(@forum) do |f| %>
+  <%= f.error_notification %>
+ 
   <% if @forum.forum_category_id and !@forum.forum_category_id.blank? -%>
     <%= f.hidden_field :forum_category_id %>
   <% else -%>
-    <div class="field"> 
-      <%= f.label :category  %><br />
-      <%= f.select :forum_category_id ,options_from_collection_for_select(ForumCategory.active, "id" , "name"), :include_blank => false %>
-    </div>
+    
+      
+      <%= f.input :forum_category_id , :collection => ForumCategory.all.where(:enabled => true).collect {|fc| [fc.name, fc.id]}, :include_blank => false %>
+    
   <% end -%>
-  
-  <div class="field">
-    <%= f.label :name  %><br />
-    <%= f.text_field :name %>
-  </div>
-  
-  <div class="field">
-    <%= f.label :description  %><br />
-    <%= f.text_area :description %>
-  </div>  
-
-  <div class="actions">
-    <%= f.submit %>
-  </div>
-  
+      <%= f.input :name  %>
+      <%= f.input :description, :as => :text, :input_html => {:size => "60x8"} %>
+      <%= f.button :submit %>
 <% end %>
 
-<script type="text/javascript" >
- 
-</script>
+
 

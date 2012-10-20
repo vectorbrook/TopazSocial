@@ -1,0 +1,47 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Customer Accounts", customer_accounts_path %> <span class="divider">/</span></li>
+  <li class="active">New Customer Account</li>
+<% end %>
+<h1>New Customer Account</h1>
+<%= simple_form_for(@customer_account) do |f| %>
+  <%= f.error_notification %>
+    <%= f.input :ac_type , :collection => ACCOUNT_TYPES , :include_blank => false  %>
+    <%= f.input :name %>
+    <%= f.input :description, :as => :text, :input_html => {:size => "60x8"}  %>
+  
+  <p>Site Details:</p>
+  <%= f.fields_for @customer_site do |s| -%>
+    <%= s.input :name %>
+    <%= s.input :description, :as => :text, :input_html => {:size => "60x8"}  %>
+    <%= s.input :address_line1 %>
+    <%= s.input :address_line2 %>
+    <%= s.input :city %>
+    <%= s.input :state %>
+    <%= s.input :zipcode %>
+    <%= s.input :country %>
+  <% end -%>
+  
+  <p>Contact Details:</p>
+  <%= f.fields_for @customer_contact do |c| -%>
+    <%= c.input :first_name %>
+    <%= c.input :last_name %>
+    <%= c.input :phone_number1 %>
+    <%= c.input :fax_number %>
+    <%= c.input :email_addr %>
+    <%= c.input :sell_to, :as => :check_boxes %>
+    <%= c.input :ship_to, :as => :check_boxes %>
+    
+    <%= c.input :bill_to, :as => :check_boxes %>
+    
+     
+    
+  <% end -%>
+
+ 
+    <%= f.button :submit %>
+ 
+  
+<% end %>
+
+
+

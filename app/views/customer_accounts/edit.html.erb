@@ -1,0 +1,8 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Customer Accounts", customer_accounts_path %> <span class="divider">/</span></li>
+  <li class="active">Edit Customer Account</li>
+<% end %>
+<h1>Editing Account: <%= @customer_account.name %></h1>
+
+<%= render 'form' %>
+

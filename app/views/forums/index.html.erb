@@ -1,36 +1,42 @@
-<h2>Forums</h2>
-<% for forum in @forums %>
-  
-  <div class="sapp_feature">
-    <h4><%= link_to forum.name , edit_forum_path(forum) %></h4>
-    <h4><%= forum.forum_category.name %></h4>
-    <p><%= forum.description %></p>      
-  </div>
-  
-  <p>    
-    <% if forum.topics.size > 0 -%>
-      <p>
-        Topics:
-        <br />
-          <% forum.topics.each do |t| -%>
-            <%= link_to t.title , forum_topic_path(forum,t) %>
-          <% end -%>
-        <% end -%>
-      </p>      
-    <%= link_to "Add a Topic" , new_forum_topic_path(forum) %>
-    <% if forum.is_enabled? -%>
-      <%= link_to "Disable" , disable_forum_path(forum) %>
-    <% else -%>
-      <%= link_to "Enable" , enable_forum_path(forum) %>
-    <% end -%>
-  </p>
-  
+<% content_for :breadcrumb do %>
+ <li class="active">Forums </li>
 <% end %>
+<h2>Forums</h2>
+<table class="table table-bordered table-hover">
+<tr>
+  <th>Name</th>
+  <th>Category</th>
+  <th>Description</th>
+  <th>Edit</th>
+  <th>Enable</th>
+  <th>Approve</th>
+</tr>
+  <% for forum in @forums %>
+    <tr>
+      <td><%= link_to forum.name , forum_forum_topics_path(forum) %></td>
+      <td><%= forum.forum_category.name %></td>
+      <td><%= forum.description %></td>
+      <td><%= link_to "Edit", edit_forum_path(forum) %></td>
+      <td><% if forum.is_enabled? -%>
+        <%= link_to "Disable" , disable_forum_path(forum) %>
+      <% else -%>
+        <%= link_to "Enable" , enable_forum_path(forum) %>
+      <% end -%></td>
+      <td><% if forum.is_approved? -%>
+        <%= link_to "Reject" , reject_forum_path(forum) %>
+      <% else -%>
+        <%= link_to "Approve" , approve_forum_path(forum) %>
+      <% end -%></td>
+      
+    </tr>
+  <% end %>
+</table>
+
+<%= paginate @forums %>
+
+<%= (page_entries_info @forums).html_safe %>
 
 <br class="clear"/>
 
 <p><%= link_to "New Forum", new_forum_path %></p>
-
-
-
 

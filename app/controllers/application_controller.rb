@@ -1,30 +1,15 @@
-# Topaz Social
-# Copyright (C) 2011 by Vector Brook
-#
-#
-# This file is part of Topaz Social.
-#
-# Topaz Social is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Topaz Social is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Topaz Social.  If not, see <http://www.gnu.org/licenses/agpl-3.0.html>.
-
 class ApplicationController < ActionController::Base
   protect_from_forgery
-  helper_method :current_user , *(ALL_ROLES - ["user"]).map { |m| [:"is_#{m}?"] }.flatten
-  before_filter :authorize_action
+  helper_method :current_user , :is_twitter_enabled? , *(ALL_ROLES - ["user"]).map { |m| [:"is_#{m}?"] }.flatten 
   rescue_from Exception, :with => :rescue_all_exceptions
+  
+  check_authorization :unless => :devise_controller?
 
-  def acl_ref
-    @acl_ref ||= ACL.instance
+  
+  TWITTER_ENABLED = false
+
+  def is_twitter_enabled?
+    @twitter_enabled ||= (TWITTER_CONSUMER_KEY and !TWITTER_CONSUMER_KEY.blank?)
   end
 
   def require_user
@@ -48,27 +33,25 @@ class ApplicationController < ActionController::Base
   end
 
   def rescue_all_exceptions(exception)
+    p exception.message
+    p exception.backtrace
     case exception
     when MongoMapper::DocumentNotFound
         flash[:notice] = "The requested resource was not found."
       when ActionController::RoutingError, ActionController::UnknownController, ActionController::UnknownAction
         flash[:notice] =  "Invalid request."
+      when Twitter::Error::Unauthorized
+        session[:twitter_token] = nil
+        flash[:notice] = "Your twitter session has expired."
+      when CanCan::AccessDenied
+        flash[:notice] = exception.message  
       else
         p exception.message
         p exception.backtrace
         flash[:notice] =   "An internal error has occurred. Sorry for the inconvenience."
     end
     redirect_to root_url
-  end
-
-  def authorize_action
-    resource_ = Util.resourcify(controller_name)
-    action_ = Util.map_action(action_name)
-    roles_ = current_user.try(:role)
-    if resource_ and action_ and roles_ and !acl_ref.is_permitted(roles_,resource_,action_)
-      redirect_to root_url , :notice => "You cannot access this action."
-    end
-  end
+  end 
 
 end
 

@@ -1,3 +1,7 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Forums", forums_path %> <span class="divider">/</span></li>
+  <li class="active">Edit forums </li>
+<% end %>
 <h1>Editing Forum: <%= @forum.name %></h1>
 
 <%= render 'form' %>

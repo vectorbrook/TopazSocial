@@ -1,8 +1,11 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Employees Administration", employees_path %> <span class="divider">/</span></li>
+  <li class="active">Edit Employee</li>
+<% end %>
 <h2>Edit Employee</h2>
 
 <%= form_for(@user, :url => edit_employee_path(@user), :html => { :method => :put }) do |f| %>
-  <%= f.error_messages %>
-
+  
   <p><%= f.label :name %><br />
   <%= f.text_field :name %></p>
   
