@@ -1,7 +1,6 @@
 <%= simple_form_for([@customer_account,@customer_site]) do |s| %>
   <%= s.error_notification %>
     <%= s.hidden_field :customer_account_id  %>
-    <%= s.input :temp  %>
     <%= s.input :name  %>
     <%= s.input :description, :as => :text, :input_html => {:size => "60x8"}  %>
     <%= s.input :address_line1 %>
@@ -13,9 +12,3 @@
     <%= s.button :submit %>
   
 <% end %>
-
-<script type="text/javascript" >
-  //alert("aass");
-  $("#customer_site_temp").autocomplete("/customer_accounts.js");
-</script>
-

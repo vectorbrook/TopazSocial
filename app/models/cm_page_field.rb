@@ -1,7 +1,7 @@
 class CmPageField
   include MongoMapper::EmbeddedDocument
   
-  belongs_to :cm_page
+  embedded_in :cm_page
   
   key :name, String, :required => true
   key :value,String, :required => true

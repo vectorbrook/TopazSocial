@@ -34,7 +34,6 @@ class User
   key :confirmation_token,   String
   key :confirmed_at,         DateTime
   key :confirmation_sent_at, DateTime
-  key :unconfirmed_email,    String # Only if using reconfirmable
 
   ## Lockable
   key :failed_attempts, Integer, :default => 0 # Only if lock strategy is :failed_attempts
@@ -94,12 +93,17 @@ class User
       VALIDATIONS
     end
   end
+  
+  has_one :customer_contact
 
   many :followers, :dependent => :destroy, :foreign_key => "follower_id", :class_name => "Follow"
   many :followings, :dependent => :destroy, :foreign_key => "following_id", :class_name => "Follow"
   many :follow_requests, :dependent => :destroy, :foreign_key => "following_id", :class_name => "FollowRequest"
 
   scope :employees , where(:role => "employee")
+  scope :non_employees , where(:role => (["user"]))
+  scope :prospects , where(:role => "prospect")
+  scope :customers , where(:role => "customer")
   scope :active , where(:active => true)
 
   (ALL_ROLES - ["user"]).each do |role|
@@ -200,7 +204,7 @@ class User
   protected
 
   def employee_not_admin
-    @is_employee_not_admin ||= ( self.role.include? "employee" and !self.role.include? "admin" )
+    @is_employee_not_admin ||= ( (self.role.include? "employee" or self.role.include? "customer" or self.role.include? "prospect")  and !self.role.include? "admin" )
   end
 
   def check_role

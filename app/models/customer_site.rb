@@ -1,5 +1,5 @@
 class CustomerSite
-  include MongoMapper::Document
+  include MongoMapper::EmbeddedDocument
   include Noteable
   include Enablable
  
@@ -20,7 +20,7 @@ class CustomerSite
   timestamps!
 
   many :customer_contacts
-  belongs_to :customer_account
+  embedded_in :customer_account
   
   def full_address
     (%w[address_line1 address_line2 city state country zipcode].collect { |a| Util.concatify_attribute(self.send(a.to_sym)) }.join)[2...2000]

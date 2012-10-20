@@ -1,6 +1,7 @@
 class CustomerContactsController < ApplicationController
  
-  load_and_authorize_resource
+  #load_and_authorize_resource
+  skip_authorization_check
   
   # GET /accounts
   # GET /accounts.xml
@@ -28,8 +29,8 @@ class CustomerContactsController < ApplicationController
   # GET /sites/new.xml
   def new
     @customer_account = CustomerAccount.find params[:customer_account_id]
-    @customer_site = CustomerSite.find params[:customer_site_id] 
-    @customer_contact = CustomerContact.new(:customer_site => @customer_site)
+    @customer_site = @customer_account.customer_sites.find(params[:customer_site_id])
+    @customer_contact = @customer_site.customer_contacts.build
 
     respond_to do |format|
       format.html # new.html.erb
@@ -40,19 +41,28 @@ class CustomerContactsController < ApplicationController
   # GET /sites/1/edit
   def edit
     @customer_account = CustomerAccount.find params[:customer_account_id]
-    @customer_site = CustomerSite.find params[:customer_site_id] 
-    @customer_contact = CustomerContact.find(params[:id])
+    @customer_site = @customer_account.customer_sites.find(params[:customer_site_id])
+    @customer_contact = @customer_site.customer_contacts.find(params[:id])
   end
 
   # POST /sites
   # POST /sites.xml
   def create
-    @customer_contact = CustomerContact.new(params[:customer_contact])
+    @customer_account = CustomerAccount.find params[:customer_account_id]
+    @customer_site = @customer_account.customer_sites.find(params[:customer_site_id])
+    @customer_contact = @customer_site.customer_contacts.build(params[:customer_contact])
     #@contact.user = current_user
 
     respond_to do |format|
       if @customer_contact.save
-        format.html { redirect_to( customer_account_customer_site_path @customer_contact.customer_site.customer_account , @customer_contact.customer_site ) }
+        contact_user = User.new
+        contact_user.name = @customer_contact.full_name
+        contact_user.email = @customer_contact.email_addr
+        contact_user.role = ["user","customer"]
+        contact_user.save(:validate => false)
+        @customer_contact.user_id = contact_user.id
+        @customer_contact.save
+        format.html { redirect_to( customer_account_customer_sites_path(@customer_account) ) }
         format.xml  { render :xml => @customer_contact, :status => :created, :location => @customer_contact }
       else
         format.html { render :action => "new" }
@@ -64,12 +74,13 @@ class CustomerContactsController < ApplicationController
   # PUT /sites/1
   # PUT /sites/1.xml
   def update
-    @customer_contact = CustomerContact.find(params[:id])
-    @customer_site = @customer_contact.customer_site
+    @customer_account = CustomerAccount.find params[:customer_account_id]
+    @customer_site = @customer_account.customer_sites.find(params[:customer_site_id])
+    @customer_contact = @customer_site.customer_contacts.find(params[:id])
 
     respond_to do |format|
       if @customer_contact.update_attributes(params[:customer_contact])
-        format.html { redirect_to(customer_account_customer_site_path @customer_contact.customer_site.customer_account , @customer_contact.customer_site) }
+        format.html { redirect_to(customer_account_customer_sites_path(@customer_account)) }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }
@@ -81,23 +92,33 @@ class CustomerContactsController < ApplicationController
   # DELETE /sites/1
   # DELETE /sites/1.xml
   def destroy
-    @customer_contact = CustomerContact.find(params[:id])
-    @customer_contact.destroy
-
+    @customer_account = CustomerAccount.find params[:customer_account_id]
+    @customer_site = @customer_account.customer_sites.find(params[:customer_site_id])
+    @customer_contact = @customer_site.customer_contacts.find(params[:id])
+    user = @customer_contact.user
+    user.role = ["user"]    
+    @customer_site.customer_contacts.delete_if{|p| p.id.to_s == params[:id]}
+    @customer_site.save
+    user.save
+    
     respond_to do |format|
-      format.html { redirect_to(customer_sites_url) }
+      format.html { redirect_to(customer_account_customer_sites_path(@customer_account)) }
       format.xml  { head :ok }
     end
   end
   
   def enable
-    @customer_contact = CustomerContact.find(params[:id])
+    @customer_account = CustomerAccount.find params[:customer_account_id]
+    @customer_site = @customer_account.customer_sites.find(params[:customer_site_id])
+    @customer_contact = @customer_site.customer_contacts.find(params[:id])
     @customer_contact.save! if @customer_site.try(:enable,current_user)
     redirect_to @customer_site.customer_account  
   end
   
    def disable
-    @customer_contact = CustomerContact.find(params[:id])
+    @customer_account = CustomerAccount.find params[:customer_account_id]
+    @customer_site = @customer_account.customer_sites.find(params[:customer_site_id])
+    @customer_contact = @customer_site.customer_contacts.find(params[:id])
     @customer_contact.save! if @customer_site.try(:disable,current_user)
     redirect_to @customer_site.customer_account  
   end

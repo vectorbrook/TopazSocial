@@ -127,6 +127,9 @@
                     <%= link_to t("employees" , :default => "Employees"), employees_path , :class => ( ( controller_name == "users" and ( action_name == "employees" ) ) ? "active" : "" ) %>
                   </li>
                   <li>
+                    <%= link_to t("customers" , :default => "Customers"), customers_path, :class => ( ( controller_name == "users" and ( action_name == "customers" ) ) ? "active" : "" ) %>    
+                  </li>
+                  <li>
                     <%= link_to t("general_users" , :default => "Prospects"), non_employees_path, :class => ( ( controller_name == "users" and ( action_name == "non_employees" ) ) ? "active" : "" ) %>    
                   </li>
                 </ul>                

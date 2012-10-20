@@ -8,3 +8,5 @@
 <%= render 'form' %>
 
 <%= link_to 'Back', :back %>
+
+<%= link_to 'Delete Contact', customer_account_customer_site_customer_contact_path(@customer_account,@customer_site,@customer_contact) , :method => :delete , :confirm => "Are you sure?" %>

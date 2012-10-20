@@ -56,7 +56,6 @@ class Ability
     support_agent
     can :manage, ServiceCase
     can [:read,:create], ForumTopic
-    can [:read,:create,:update], ForumPost
     can :read, [CustomerAccount,CustomerSite,CustomerContact]
   end
   

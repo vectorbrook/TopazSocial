@@ -9,9 +9,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
       resource.role = Util.add_default_roles(resource.role)
     end
     if resource.save(:validate => false)
-      set_flash_message :notice, "Employee has been added. Account activation instructions emailed." #:signed_up
+      #:signed_up
       #sign_in_and_redirect(resource_name, resource)
-      redirect_to root_url
+      redirect_to root_url, :notice => "Employee has been added. Account activation instructions emailed."
     else
       clean_up_passwords(resource)
       render :new

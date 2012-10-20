@@ -8,6 +8,7 @@ TopazSocial::Application.routes.draw do
   match "/employees"  => "users#employees" , :as => :employees
   match "/non_employees"  => "users#non_employees" , :as => :non_employees
   match "/edit_employee/:id"  => "users#edit_employee" , :as => :edit_employee
+  match "/customers"  => "users#customers" , :as => :customers
 
   match 'follow/:id'=> "users#follow" , :as => :follow
   match 'unfollow/:id'=> "users#unfollow" , :as => :unfollow

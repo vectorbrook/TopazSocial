@@ -55,11 +55,11 @@ class CustomerAccountsController < ApplicationController
       
       @customer_account = CustomerAccount.new(params[:customer_account])
       @customer_account.save!
-      @customer_site = CustomerSite.new(params[:customer_account][:customer_site])
-      @customer_site.customer_account = @customer_account
+      @customer_site = @customer_account.customer_sites.build(params[:customer_account][:customer_site])
+      #@customer_site.customer_account = @customer_account
       @customer_site.save!
-      @customer_contact = CustomerContact.new(params[:customer_account][:customer_contact])
-      @customer_contact.customer_site = @customer_site
+      @customer_contact = @customer_site.customer_contacts.build(params[:customer_account][:customer_contact])
+      #@customer_contact.customer_site = @customer_site
       @customer_contact.save!
       
       respond_to do |format|

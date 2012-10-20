@@ -18,7 +18,7 @@
       <%= f.label :role %>:
       <input id="user_role_" name="user[role][]" type="hidden" value="" />
       <ul>
-        <% ROLES.each do |role| -%>
+        <% (ROLES-["admin"]).each do |role| -%>
           <li>
             <label for="user_role_<%= role %>">
               <input id="user_role_<%= role %>" name="user[role][]" type="checkbox" value="<%= role %>" />

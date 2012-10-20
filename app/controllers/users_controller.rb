@@ -7,11 +7,15 @@ class UsersController < ApplicationController
   #before_filter :require_employee , :only => [:my_cases]
 
   def employees
-    @users = User.where(:role => "employee").all
+    @users = User.employees.all
   end
 
   def non_employees
-    @users = User.all - User.where(:role => "employee").all
+    @users = User.all - User.where(:role => "employee").all - User.customers.all
+  end
+  
+  def customers
+    @users = User.customers.all
   end
 
   def edit_employee
