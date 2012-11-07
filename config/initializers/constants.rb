@@ -1,5 +1,3 @@
-APP_URL = "http://topazsocial.com/"
-
 ROLES = %w[admin approver moderator customer prospect sales_engineer sales_manager support_agent support_manager social_media_manager community_manager]
 DEFAULT_ROLES = %w[user employee]
 ALL_ROLES = ROLES + DEFAULT_ROLES

@@ -55,7 +55,6 @@ class Ability
   def support_manager
     support_agent
     can :manage, ServiceCase
-    can [:read,:create], ForumTopic
     can :read, [CustomerAccount,CustomerSite,CustomerContact]
   end
   

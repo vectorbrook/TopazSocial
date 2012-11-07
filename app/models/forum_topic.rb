@@ -1,5 +1,5 @@
 class ForumTopic
-  include MongoMapper::Document
+  include MongoMapper::EmbeddedDocument
   include Enablable
   include Approvable
   include Lockable
@@ -13,7 +13,7 @@ class ForumTopic
   key :last_post_id,     ObjectId
   key :last_updated_at,  DateTime
   key :last_user_id,     ObjectId
-  key :forum_id,         ObjectId,  :required => true
+  #key :forum_id,         ObjectId,  :required => true
   key :user_id,          ObjectId,  :required => true
 
   timestamps!
@@ -22,7 +22,7 @@ class ForumTopic
 
   #has_permalink_on :title , :parent => :forum
 
-  belongs_to :forum
+  embedded_in :forum
   belongs_to :user
   #many :forum_posts
   #many :interactions
@@ -34,7 +34,7 @@ class ForumTopic
   end
   
   def interactions
-    Interaction.all(:context => "ForumTopic", :context_id => id)
+    Interaction.all(:context => "ForumTopic", :context_id => id,:parent_context => "Forum", :parent_context_id => self.forum.id)
   end
 
   protected
@@ -51,9 +51,13 @@ class ForumTopic
   def name_duplicity_within_forum
     name_ = self.title
     topics_ = nil
-    topics_ = ForumTopic.where(:title => /#{name_}/i,:forum_id => self.forum.id).all if ( name_ and !name_.empty? )
+    forum = self.forum
+    p "aaaaaaaaaaaaaa"
+    p forum
+    topics_ = forum.forum_topics.select {|topic| topic.title =~ /#{name_}/i && topic.id != self.id} if ( name_ and !name_.empty? )
+    p topics_
     if topics_ and !topics_.empty?
-      errors.add_to_base("Forum Topic with a same name already exists.")
+      errors.add(:title,"Topic with a same name already exists.")
     end
   end
 

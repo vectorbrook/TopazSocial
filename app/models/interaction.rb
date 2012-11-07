@@ -14,7 +14,9 @@ class Interaction
   key :context, String, :required => true
   key :user_id, ObjectId, :required => true
   key :approved, Boolean, :default => true
-  key :approved_by, ObjectId 
+  key :approved_by, ObjectId
+  key :parent_context_id, ObjectId
+  key :parent_context, String
 
   timestamps!
   

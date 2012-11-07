@@ -33,6 +33,8 @@
   <%= f.error_notification %>
   
   
+    <%= f.hidden_field :parent_context_id  %>
+    <%= f.hidden_field :parent_context  %>
     <%= f.hidden_field :context_id  %>
     <%= f.hidden_field :context  %>
     <%= f.input :body, :as => :text, :input_html => {:size => "60x8"} %>

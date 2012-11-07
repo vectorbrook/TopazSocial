@@ -1,6 +1,7 @@
 class ForumTopicsController < ApplicationController
   
-  load_and_authorize_resource
+  #load_and_authorize_resource
+  skip_authorization_check
   
   #before_filter :require_user , :only => ['new','create']
   #before_filter :require_admin , :only => ['edit','update','destroy','add_notification']
@@ -20,9 +21,10 @@ class ForumTopicsController < ApplicationController
   # GET /topics/1
   # GET /topics/1.xml
   def show
-    @topic = ForumTopic.find(params[:id])
+    @forum = Forum.find params[:forum_id]
+    @topic = @forum.forum_topics.find(params[:id]) #select {|topic| topic.id == (params[:id])}[0]
     @interactions = @topic.interactions
-    @interaction = Interaction.new(:context => "ForumTopic",:context_id => @topic.id)
+    @interaction = Interaction.new(:context => "ForumTopic",:context_id => @topic.id,:parent_context => "Forum", :parent_context_id => @forum.id)
     
     session[:back_to] = forum_forum_topic_path(@topic.forum, @topic)
 
@@ -45,15 +47,16 @@ class ForumTopicsController < ApplicationController
   end
 
   # GET /topics/1/edit
-  def edit
-    @topic = ForumTopic.find(params[:id])
+  def edit    
     @forum = Forum.find params[:forum_id]
+    @topic = ForumTopic.find(params[:id])
   end
 
   # POST /topics
   # POST /topics.xml
   def create
-    @topic = ForumTopic.new(params[:forum_topic])
+    @forum = Forum.find params[:forum_id]
+    @topic = @forum.forum_topics.build(params[:forum_topic])
     @topic.user = current_user
 
     respond_to do |format|
@@ -71,7 +74,8 @@ class ForumTopicsController < ApplicationController
   # PUT /topics/1
   # PUT /topics/1.xml
   def update
-    @topic = ForumTopic.find(params[:id])
+    @forum = Forum.find params[:forum_id]
+    @topic = @forum.forum_topics.find(params[:id])
 
     respond_to do |format|
       if @topic.update_attributes(params[:forum_topic])
