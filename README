@@ -12,8 +12,7 @@ Main Gems
 
   Devise
   Omniauth
-  Cancan
-  MongoMapper
+  Mongoid
   SimpleForm
   Kaminari
 
