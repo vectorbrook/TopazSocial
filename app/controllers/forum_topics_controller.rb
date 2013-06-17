@@ -1,10 +1,8 @@
 class ForumTopicsController < ApplicationController
-  
-  #load_and_authorize_resource
-  skip_authorization_check
-  
-  #before_filter :require_user , :only => ['new','create']
-  #before_filter :require_admin , :only => ['edit','update','destroy','add_notification']
+
+  before_filter :require_user , :only => ['new','create']
+  before_filter :require_admin , :only => ['edit','update','destroy','add_notification']
+
   # GET /forums
   # GET /forums.xml
   def index
@@ -25,7 +23,7 @@ class ForumTopicsController < ApplicationController
     @topic = @forum.forum_topics.find(params[:id]) #select {|topic| topic.id == (params[:id])}[0]
     @interactions = @topic.interactions
     @interaction = Interaction.new(:context => "ForumTopic",:context_id => @topic.id,:parent_context => "Forum", :parent_context_id => @forum.id)
-    
+
     session[:back_to] = forum_forum_topic_path(@topic.forum, @topic)
 
     respond_to do |format|
@@ -47,7 +45,7 @@ class ForumTopicsController < ApplicationController
   end
 
   # GET /topics/1/edit
-  def edit    
+  def edit
     @forum = Forum.find params[:forum_id]
     @topic = ForumTopic.find(params[:id])
   end
@@ -140,4 +138,3 @@ class ForumTopicsController < ApplicationController
   end
 
 end
-

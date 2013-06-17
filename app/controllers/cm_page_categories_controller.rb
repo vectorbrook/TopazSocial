@@ -1,6 +1,10 @@
 class CmPageCategoriesController < ApplicationController
   
-  load_and_authorize_resource
+  before_filter :check_role, :only => [:index, :show, :new, :edit, :create, :update]
+  def check_role
+   is_admin?
+  end
+
   
   # GET /cm_page_categories
   # GET /cm_page_categories.xml
@@ -8,9 +12,11 @@ class CmPageCategoriesController < ApplicationController
     cond_ = {}
     if params[:r]
       cond_ = {:name => /#{params[:r]}/i }
+      @cm_page_categories = CmPageCategory.where(cond_).order_by('created_at ASC').page params[:page]
+    else
+    #@cm_page_categories = CmPageCategory.paginate :page => params[:page], :order => 'created_at ASC' , :conditions => cond_
+      @cm_page_categories = CmPageCategory.order_by('created_at ASC').page params[:page]
     end
-    @cm_page_categories = CmPageCategory.paginate :page => params[:page], :order => 'created_at ASC' , :conditions => cond_
-
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @cm_page_categories }

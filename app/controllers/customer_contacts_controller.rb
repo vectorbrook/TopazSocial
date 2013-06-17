@@ -1,7 +1,9 @@
 class CustomerContactsController < ApplicationController
  
-  #load_and_authorize_resource
-  skip_authorization_check
+  before_filter :check_role, :only => [:index, :show, :new, :edit, :create, :update]
+  def check_role
+   is_admin? || is_support_manager?  
+  end
   
   # GET /accounts
   # GET /accounts.xml

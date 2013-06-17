@@ -1,21 +1,26 @@
 class CustomerAccountsController < ApplicationController
-  
-  load_and_authorize_resource
-  
+
+  before_filter :check_role, :only => [:index, :show, :new, :edit, :create, :update]
+  def check_role
+   is_admin? || is_support_manager?
+  end
+
   # GET /customer_accounts
   # GET /customer_accounts.xml
   def index
     #@customer_accounts = CustomerAccount.all
-    cond_ = {}
     if params[:r]
       cond_ = {:name => /#{params[:r]}/i }
-    end
-    @customer_accounts = CustomerAccount.paginate :page => params[:page], :order => 'created_at DESC' , :conditions => cond_
 
+      @customer_accounts = (CustomerAccount.where(cond_).order_by('created_at DESC').page params[:page]) || []
+      p @customer_accounts
+    else
+      @customer_accounts = (CustomerAccount.order_by('created_at DESC').page params[:page]) || []
+    end
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @customer_accounts }
-      format.js 
+      format.js
     end
   end
 
@@ -33,8 +38,8 @@ class CustomerAccountsController < ApplicationController
   # GET /customer_accounts/new
   # GET /customer_accounts/new.xml
   def new
-    @customer_account =  CustomerAccount.new
-    @customer_site = CustomerSite.new#(:customer_account => @customer_account)
+    @customer_account = CustomerAccount.new
+    @customer_site = CustomerSite.new #(:customer_account => @customer_account)
     @customer_contact = CustomerContact.new#(:site => @site)
 
     respond_to do |format|
@@ -52,7 +57,7 @@ class CustomerAccountsController < ApplicationController
   # POST /customer_accounts.xml
   def create
     begin
-      
+
       @customer_account = CustomerAccount.new(params[:customer_account])
       @customer_account.save!
       @customer_site = @customer_account.customer_sites.build(params[:customer_account][:customer_site])
@@ -61,31 +66,29 @@ class CustomerAccountsController < ApplicationController
       @customer_contact = @customer_site.customer_contacts.build(params[:customer_account][:customer_contact])
       #@customer_contact.customer_site = @customer_site
       @customer_contact.save!
-      
+
       respond_to do |format|
         format.html { redirect_to(customer_accounts_path) }
-        format.xml  { render :xml => @customer_account, :status => :created, :location => @customer_account }      
+        format.xml  { render :xml => @customer_account, :status => :created, :location => @customer_account }
       end
-      
+
     rescue Exception => e
-      
-      p "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-      p e.message
+
       @customer_contact.try(:delete)
       @customer_site.try(:delete)
       @customer_account.try(:delete)
-      
+
       @customer_contact = CustomerContact.new(params[:customer_account][:customer_contact])
       @customer_site = CustomerSite.new(params[:customer_account][:customer_site])
       @customer_account = CustomerAccount.new(params[:customer_account])
-      
+
       respond_to do |format|
         format.html { render :action => "new" }
         format.xml  { render :xml => @customer_account.errors, :status => :unprocessable_entity }
       end
-      
-    end    
-    
+
+    end
+
   end
 
   # PUT /customer_accounts/1
@@ -115,17 +118,17 @@ class CustomerAccountsController < ApplicationController
       format.xml  { head :ok }
     end
   end
-  
+
   def enable
     @customer_account = CustomerAccount.find(params[:id])
     @customer_account.save! if @customer_account.try(:enable,current_user)
-    redirect_to customer_accounts_path  
+    redirect_to customer_accounts_path
   end
-  
+
    def disable
     @customer_account = CustomerAccount.find(params[:id])
     @customer_account.save! if @customer_account.try(:disable,current_user)
     redirect_to customer_accounts_path
   end
-  
+
 end

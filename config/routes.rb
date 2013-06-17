@@ -1,27 +1,21 @@
 TopazSocial::Application.routes.draw do
   
   resources :interactions
-
+  root :to => "welcome#welcome"
   get "welcome/welcome" , :as => :welcome
   match "welcome/quick_find" => "welcome#quick_find"
-  
+  #devise_for :users
   match "/employees"  => "users#employees" , :as => :employees
   match "/non_employees"  => "users#non_employees" , :as => :non_employees
   match "/edit_employee/:id"  => "users#edit_employee" , :as => :edit_employee
   match "/customers"  => "users#customers" , :as => :customers
-
-  match 'follow/:id'=> "users#follow" , :as => :follow
-  match 'unfollow/:id'=> "users#unfollow" , :as => :unfollow
-  match 'remove_follower/:id'=> "users#remove_follower" , :as => :remove_follower
-  match 'accept/:id' => "users#accept" , :as => :accept
-  match 'decline/:id' =>"users#decline" , :as => :decline
 
   match 'enable_user/:id' => "users#enable_user", :as => :enable_user
   match 'disable_user/:id' => "users#disable_user", :as => :disable_user
 
   match 'clear/:provider/:id' => "users#clear_provider_details", :as => :clear
 
-  
+
   match "/social"  => "users#social" , :as => :social
   match "/do_tweet"  => "users#do_tweet" , :as => :do_tweet
 
@@ -33,6 +27,7 @@ TopazSocial::Application.routes.draw do
     get "/logout" => "users/sessions#destroy"
     get '/users/auth/:provider' => 'users/omniauth_callbacks#passthru'
   end
+  resources :users
 
   match "/enable_forum_category/:id" => "forum_categories#enable" , :as => :enable_forum_category
   match "/disable_forum_category/:id" => "forum_categories#disable" , :as => :disable_forum_category
@@ -46,9 +41,6 @@ TopazSocial::Application.routes.draw do
     resources :forum_topics
   end
   
-  resources :cm_page_categories
-  resources :cm_pages
-  
   match '/new_forum_topic_interaction/:id' => "interactions#new_for_forum_topic", :as => :new_forum_topic_interaction
 
   match "/add_forum/:fc_id" => "forums#new" , :as => :add_forum
@@ -56,6 +48,7 @@ TopazSocial::Application.routes.draw do
   match "/disable_forum/:id" => "forums#disable" , :as => :disable_forum
   match "/approve_forum/:id" => "forums#approve" , :as => :approve_forum
   match "/reject_forum/:id" => "forums#reject" , :as => :reject_forum
+
 
   resources :customer_accounts do
     resources :customer_sites do
@@ -76,6 +69,10 @@ TopazSocial::Application.routes.draw do
   match '/assign_case(/:id)' => "service_cases#assign_case" , :as => :assign_case
   match '/add_log' => "service_cases#add_log" , :as => :add_log
   match "/my_cases"  => "service_cases#my_cases" , :as => :my_cases
+  
+  resources :cm_page_categories
+  resources :cm_pages
+
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
@@ -126,11 +123,11 @@ TopazSocial::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  root :to => "welcome#welcome"
+  # root :to => 'welcome#index'
 
   # See how all your routes lay out with "rake routes"
 
   # This is a legacy wild controller route that's not recommended for RESTful applications.
   # Note: This route will make all actions in every controller accessible via GET requests.
-  # match ':controller(/:action(/:id(.:format)))'
+  # match ':controller(/:action(/:id))(.:format)'
 end

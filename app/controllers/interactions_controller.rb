@@ -1,8 +1,13 @@
 class InteractionsController < ApplicationController
-  load_and_authorize_resource
-  
+
+  before_filter :check_role, :only => [:index, :show, :new, :edit, :create, :update]
+
   # GET /interactions
   # GET /interactions.json
+  def check_role
+    is_admin? || is_support_manager? || is_support_agent? || is_social_media_manager? || is_community_manager?
+  end
+
   def index
     @interactions = Interaction.all
 
@@ -53,8 +58,6 @@ class InteractionsController < ApplicationController
         format.html { redirect_to session[:back_to] || root_url }
         #format.json { render json: @interaction, status: :created, location: @interaction }
       else
-        p "mmmmmmmmmmmmmmmm"
-        p @interaction.errors
         format.html { redirect_to root_url, :notice => "Please try again."  }
         #format.json { render json: @interaction.errors, status: :unprocessable_entity }
       end
@@ -91,17 +94,17 @@ class InteractionsController < ApplicationController
       #format.json { head :no_content }
     end
   end
-  
+
   def new_for_forum_topic
     @forum_topic = ForumTopic.find(params[:id])
     @interaction = Interaction.new(:context => "ForumTopic",:context_id => @forum_topic.id)
     @header = "Add a post for #{@forum_topic.title}"
-    
+
     session[:back_to] = forum_forum_topic_path(@forum_topic.forum, @forum_topic)
 
     render :new
   end
-  
-  
-  
+
+
+
 end

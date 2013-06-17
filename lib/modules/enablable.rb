@@ -33,7 +33,7 @@ module Enablable
   def self.included(receiver)
     receiver.extend         ClassMethods
     receiver.send :include, InstanceMethods
-    receiver.send :key, :enabled , Boolean , :default => true
+    receiver.send :field, :enabled , :type => Boolean , :default => true
   end
 
 end

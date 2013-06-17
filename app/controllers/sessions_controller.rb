@@ -1,6 +1,6 @@
 class SessionsController < ApplicationController  
 
-  skip_authorization_check :only => :destroy
+  #skip_authorization_check :only => :destroy
   #load_and_authorize_resource
 
   def destroy

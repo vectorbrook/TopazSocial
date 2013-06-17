@@ -1,8 +1,7 @@
 class ForumsController < ApplicationController
-  
-  load_and_authorize_resource
-  
-  #before_filter :require_admin, :except => [:index,:show]
+
+  before_filter :require_admin, :except => [:index,:show]
+
   # GET /forums
   # GET /forums.xml
   def index
@@ -10,9 +9,10 @@ class ForumsController < ApplicationController
     cond_ = {}
     if params[:r]
       cond_ = {:name => /#{params[:r]}/i }
+      @forums = Forum.where(cond_).order_by('name DESC').page params[:page]
+    else
+      @forums = Forum.order_by('name DESC').page params[:page]
     end
-    @forums = Forum.where(:name => /#{params[:r]}/i).order(:name).page params[:page]
-
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @forums }
@@ -101,7 +101,7 @@ class ForumsController < ApplicationController
     @forum.save! if @forum.try(:disable,current_user)
     redirect_to forums_path
   end
-  
+
   def approve
     @forum = Forum.find(params[:id])
     @forum.save! if @forum.try(:approve,current_user)
@@ -115,4 +115,3 @@ class ForumsController < ApplicationController
   end
 
 end
-

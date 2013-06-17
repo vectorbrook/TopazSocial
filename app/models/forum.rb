@@ -1,25 +1,25 @@
 class Forum
-  include MongoMapper::Document
+  include Mongoid::Document
   include Noteable
   include Enablable
   include Approvable
   include Permalink
 
-  key :name,               String,    :required => true
-  key :description,        String
-  key :topics_count,       Integer,   :default => 0
-  key :posts_count,        Integer,   :default => 0
-  key :position,           Integer,   :default => 0
-  key :description_html,   String
-  key :state,              String,    :default => "public"
-  key :forum_category_id,  ObjectId,  :required => true
+  field :name, :type => String
+  field :description, :type => String
+  field :topics_count, :type => Integer,   :default => 0
+  field :posts_count, :type => Integer,   :default => 0
+  field :position, :type => Integer,   :default => 0
+  field :description_html, :type => String
+  field :state, :type => String,    :default => "public"
+  field :forum_category_id, :type => Moped::BSON::ObjectId
 
   validate :name_duplicity_within_category
 
   has_permalink_on :name
 
   belongs_to :forum_category
-  many :forum_topics
+  embeds_many :forum_topics
 
   attr_accessible :name , :description, :forum_category_id
 

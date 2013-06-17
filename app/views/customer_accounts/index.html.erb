@@ -11,8 +11,9 @@
     <th>Add Site</th>
     <th>Enable</th>
   </tr>
-<% for customer_account in @customer_accounts %>
-  <tr>
+
+  <% @customer_accounts.each do |customer_account| %>
+    <tr>
       <td><%= link_to customer_account.name , customer_account_customer_sites_path(customer_account) %></td>
       <td><%= customer_account.ac_type %></td>
       <td><%= customer_account.description %></td>    
@@ -26,8 +27,9 @@
           <%= link_to "Enable" , enable_account_path(customer_account) %>
         <% end -%>
       </td>
-  </tr>
-<% end %>
+    </tr>
+  <% end %>
+
 </table>
 
 <p><%= link_to "New Account", new_customer_account_path %></p>

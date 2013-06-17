@@ -1,6 +1,10 @@
 class CategoriesController < ApplicationController
   
-  load_and_authorize_resource
+  before_filter :check_role, :only => [:index, :show, :new, :edit, :create, :update]
+  def check_role
+   is_admin?
+  end
+
   
   # GET /categories
   # GET /categories.xml
@@ -9,9 +13,10 @@ class CategoriesController < ApplicationController
     cond_ = {}
     if params[:r]
       cond_ = {:name => /#{params[:r]}/i }
+      @categories = Category.where(cond_).order_by('created_at ASC').page params[:page]
+    else
+      @categories = Category.order_by('created_at ASC').page params[:page]
     end
-    @categories = Category.paginate :page => params[:page], :order => 'created_at DESC' , :conditions => cond_
-
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @categories }

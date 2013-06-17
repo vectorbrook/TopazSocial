@@ -11,7 +11,7 @@
     <th>Status</th>
     <th>description</th>
     <th>Assigned To</th>
-    <th></th>
+    
   </tr>
   
   <% for service_case in @service_cases %>
@@ -25,14 +25,18 @@
       
         
         <% if service_case.assigned? %>
-          <td>
-            <%= service_case.assigned_user_name(service_case.assigned_to) %></td>
-          <td>
+        <td>  
+            <%= service_case.assigned_user_name(service_case.assigned_to) %>
+          
           <%= link_to "Re-Assign" , assign_case_path(service_case)%>
+        </td>  
         <% else %>
+        
+        <td>
           <%= link_to "Assign" , assign_case_path(service_case)%>
-          </td>
+         </td> 
         <% end-%>
+        
         
      </tr>   
     

@@ -7,7 +7,9 @@
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
   <![endif]-->
   <%= stylesheet_link_tag    "application.css", :media => "all" %>
+  <%= stylesheet_link_tag    "bootstrap.min.css" %>
   <%= javascript_include_tag "application.js" %>
+  
   <%= csrf_meta_tags %>
   <%= yield(:head) %>
   
@@ -31,7 +33,6 @@
           <a class="brand" href="/">Topaz Social</a>
           <div class="nav-collapse">          
             <ul class="nav pull-right">
-
               <% if current_user %>
                 
                   <%= t("welcome" , :default => "Welcome") %> <%=  link_to (current_user.name || "User") , edit_user_registration_path(current_user) %>! | <%= link_to t("sign_out" ,:default => "Sign Out"),  "/logout" , { :title => "Log out" }  %>
@@ -45,8 +46,7 @@
                     <% end -%>                  
                     <%= link_to t("employee_login", :default => "Employee Login") , login_path %>
               <% end %>
-
-            </ul>         
+            </ul>
           </div><!-- /.nav-collapse -->
         </div><!-- /container -->
       </div><!-- /navbar-inner -->
@@ -57,17 +57,14 @@
 
 
 	  <!-- container -->
-	  <div class="container">
-
-      <!-- search -->
+	    <div class="container">
+       <!-- search -->
       <div class="row">
         <div class="span8">
           <ul class="breadcrumb">
             <%= yield :breadcrumb %>
           </ul>
-        </div>
-
-        <div class="span4" id="search">
+        </div>     <div class="span4" id="search">
           <form id="s_sapps" class="navbar-search pull-right"  method="get" action="/welcome/quick_find">
             <fieldset>
               <input type="text" id="r" name="r" value="" size="20" onfocus="document.forms['s_sapps'].r.value='';" onblur="if (document.forms['s_sapps'].r.value == '') document.forms['s_sapps'].r.value='Quick Search';" class="required" />
@@ -78,8 +75,6 @@
         </div> 
         <%= yield :sidebar %>
       </div>
-       <!-- search --> 
-        
 
       <!-- Navigation menu -->
       <div class="row">
@@ -92,13 +87,12 @@
               </a>
                 <ul class="dropdown-menu">
                   <li><a href="/" title="Home" class=<%= ( controller_name == "welcome" ) ? "active" : "" %> >
-                <%= t("home" , :default => "Home") %>
-              </a>
-</li>
+                      <%= t("home" , :default => "Home") %>
+                  </a>
+                  </li>
                 </ul>
             </li>
-
-
+            
             <% if current_user and is_twitter_enabled? -%>
 
               <li class="dropdown">
@@ -115,9 +109,7 @@
 
             <% end -%>
 
-
-            <% if is_admin? -%>
-                          
+            <% if is_admin? -%> 
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" style= "color:white; background: #33CCFF"> Users
                   <b class="caret"></b>
@@ -132,29 +124,32 @@
                   <li>
                     <%= link_to t("general_users" , :default => "Prospects"), non_employees_path, :class => ( ( controller_name == "users" and ( action_name == "non_employees" ) ) ? "active" : "" ) %>    
                   </li>
-                </ul>                
-              </li>
-            <% end -%>
-            <% if can? :read, ForumTopic -%>
+
+                </ul>
+              </li> 
+             <% end -%> 
+             
+             <% if is_admin? || is_support_manager? || is_support_agent? || is_social_media_manager? || is_community_manager? %>
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" style= "color:white; background: #33CCFF"> Communities
                   <b class="caret"></b>
                 </a>
                   <ul class="dropdown-menu">
-                    <% if can? :manage, ForumCategory -%>
+                  <% if is_admin? %>  
                       <li>
                         <%= link_to t("forum_categories" , :default => " Categories"), forum_categories_path , :class => ( ( controller_name == "forum_categories" ) ? "active" : "" ) %>
                       </li>
-                    <% end -%>                    
-                    <% if can? :read, Forum -%>
+                  <% end -%>                     
+                    
                       <li>
                         <%= link_to t("forums" , :default => "Forums"), forums_path , :class => ( ( controller_name == "forums" )  ? "active" : "" ) %>
                       </li>
-                    <% end -%>                    
+                                      
                   </ul>
              </li>
-            <% end -%>  
-            <% if can? :read, CustomerAccount -%>
+
+            <% end %>
+            <% if is_admin? || is_support_manager? %>
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" style= "color:white; background: #33CCFF"> Accounts
                   <b class="caret"></b>
@@ -165,61 +160,67 @@
                     </li>
                  </ul>
               </li>
-            <% end -%> 
-            <% if current_user -%>
-              <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#" style= "color:white; background: #33CCFF"> Support
-                  <b class="caret"></b>
-                </a>
-                <ul class="dropdown-menu">
-                  <li>
-                    <%= link_to t("service_cases" , :default => "Create Service Case"), new_service_case_path , :class => ( ( controller_name == "service_cases" ) ? "active" : "" )%>
-                  </li>
-                  <li>
-                    <%= link_to t("service_cases" , :default => "All Service Cases"), service_cases_path , :class => ( ( controller_name == "service_cases" ) ? "active" : "" )%>
-                  </li>
-                  <li>
-                    <%= link_to t("service_cases" , :default => "Assigned Service Cases"), assigned_cases_path , :class => ( ( controller_name == "service_cases" ) ? "active" : "" )%>
-                  </li>
-                  <li>
-                    <%= link_to t("service_cases" , :default => "Unassigned Service Cases"), unassigned_cases_path , :class => ( ( controller_name == "service_cases" ) ? "active" : "" )%>
-                  </li>
-                  <li>
-                    <%= link_to t("my_cases" , :default => "My Cases"), my_cases_path , :class => ( ( controller_name == "users" and ( action_name == "my_cases" ) ) ? "active" : "" )%>
-                  </li>                    
-                </ul>
-              </li>
-              <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#" style= "color:white; background: #33CCFF"> Content Marketing
-                  <b class="caret"></b>
-                </a>
+            <% end %>  
+              
+              <% if current_user -%>
+                <li class="dropdown">
+                  <a class="dropdown-toggle" data-toggle="dropdown" href="#" style= "color:white; background: #33CCFF"> Support
+                    <b class="caret"></b>
+                  </a>
                   <ul class="dropdown-menu">
-                    <% if can? :manage, CmPageCategory -%>
+                    <li>
+                      <%= link_to t("service_cases" , :default => "Create Service Case"), new_service_case_path , :class => ( ( controller_name == "service_cases" ) ? "active" : "" )%>
+                    </li>
+                    <li>
+                      <%= link_to t("service_cases" , :default => "All Service Cases"), service_cases_path , :class => ( ( controller_name == "service_cases" ) ? "active" : "" )%>
+                    </li>
+                    <li>
+                      <%= link_to t("service_cases" , :default => "Assigned Service Cases"), assigned_cases_path , :class => ( ( controller_name == "service_cases" ) ? "active" : "" )%>
+                    </li>
+                    <li>
+                      <%= link_to t("service_cases" , :default => "Unassigned Service Cases"), unassigned_cases_path , :class => ( ( controller_name == "service_cases" ) ? "active" : "" )%>
+                    </li>
+                    <li>
+                      <%= link_to t("my_cases" , :default => "My Cases"), my_cases_path , :class => ( ( controller_name == "users" and ( action_name == "my_cases" ) ) ? "active" : "" )%>
+                    </li>                    
+                  </ul>
+                </li>
+                <li class="dropdown">
+                  <a class="dropdown-toggle" data-toggle="dropdown" href="#" style= "color:white; background: #33CCFF"> Content Marketing
+                  <b class="caret"></b>
+                  </a>
+                  <ul class="dropdown-menu">
+                  <% if is_admin? %>  
                       <li>
                         <%= link_to t("cm_page_categories" , :default => "Categories"), cm_page_categories_path , :class => ( ( controller_name == "cm_page_categories" ) ? "active" : "" ) %>
                       </li>
-                    <% end -%>
+                  <% end %>  
                     <li>
                       <%= link_to t("cm_pages" , :default => "Pages"), cm_pages_path , :class => ( ( controller_name == "cm_pages" )  ? "active" : "" )%>
                     </li>
-                 </ul>
-              </li>                             
-            <% end -%>
+                  </ul>
+                </li>                             
 
-          </ul>
+              <% end -%>   
+            
+         </ul>
         </div>
       </div> 
       <!-- Navigation menu -->
 
+            
+            
+            
       <div id="wrapper" class="wat-cf">
         <div class="flash">
-          <% flash.each do |type, message| -%>
-            <div class="message <%= type %>">
-              <p><%= message %></p>
-            </div>
-          <% end -%>
+          <% flash.each do |name, msg| %>
+            <% if msg.is_a?(String) %>
+            <%= content_tag :div, msg, :id => "flash_#{name}" %>
+          <% end %>
+          <% end %>
         </div>
-      </div>
+      </div>             
+
 
       <div id="main">
         <%= yield %>

@@ -1,15 +1,22 @@
 class ServiceCasesController < ApplicationController
-  load_and_authorize_resource
-  
-  # GET /service_cases
-  # GET /service_cases.xml
+
+  before_filter :check_role, :only => [:index, :unassigned_cases, :assigned_cases, :show, :new, :edit, :create, :update, :destroy, :my_cases, :add_log, :add_interaction, :assign_case]
+
+  def check_role
+    is_admin? || is_support_manager? || is_support_agent? || is_social_media_manager? || is_community_manager?
+  end
+
   def index
     #@service_cases = ServiceCase.all
+
     cond_ = {}
     if params[:r]
       cond_ = {:name => /#{params[:r]}/i }
+      @service_cases = ServiceCase.where(cond_).order_by('name DESC').page params[:page]
+    else
+      @service_cases = ServiceCase.order_by('name DESC').page params[:page]
     end
-    @service_cases = ServiceCase.where(:name => /#{params[:r]}/i).order(:name).page params[:page]
+
 
     respond_to do |format|
       format.html # index.html.erb
@@ -17,14 +24,17 @@ class ServiceCasesController < ApplicationController
       format.js
     end
   end
-  
+
   def unassigned_cases
     #@service_cases = ServiceCase.all
     cond_ = {}
     if params[:r]
       cond_ = {:name => /#{params[:r]}/i }
+       @service_cases = ServiceCase.unassigned.where(cond_).order_by('name DESC').page params[:page]
+    else
+       @service_cases = ServiceCase.unassigned.order_by('name DESC').page params[:page]
     end
-    @service_cases = ServiceCase.unassigned.where(:name => /#{params[:r]}/i).order(:name).page params[:page]
+    #@service_cases = ServiceCase.unassigned.where(:name => /#{params[:r]}/i).order(:name).page params[:page]
 
     respond_to do |format|
       format.html { render :index }
@@ -32,15 +42,17 @@ class ServiceCasesController < ApplicationController
       format.js
     end
   end
-  
+
   def assigned_cases
     #@service_cases = ServiceCase.all
     cond_ = {}
     if params[:r]
       cond_ = {:name => /#{params[:r]}/i }
+      @service_cases = ServiceCase.assigned.where(cond_).order_by('name DESC').page params[:page]
+    else
+    #@service_cases = ServiceCase.assigned.where(:name => /#{params[:r]}/i).order(:name).page params[:page]
+    @service_cases = ServiceCase.assigned.order_by('name DESC').page params[:page]
     end
-    @service_cases = ServiceCase.assigned.where(:name => /#{params[:r]}/i).order(:name).page params[:page]
-
     respond_to do |format|
       format.html { render :index }
       format.xml  { render :xml => @service_cases }
@@ -55,7 +67,7 @@ class ServiceCasesController < ApplicationController
     #@cust_interaction = ServiceCaseInteraction.new(:service_case => @service_case)
     @interactions = @service_case.interactions
     @interaction = Interaction.new(:context => "ServiceCase",:context_id => @service_case.id)
-    
+
     session[:back_to] = service_case_path(@service_case)
 
     respond_to do |format|
@@ -84,31 +96,29 @@ class ServiceCasesController < ApplicationController
   # POST /service_cases.xml
   def create
     begin
-      
+
       @service_case = ServiceCase.new(params[:service_case])
       @service_case.created_by = current_user.id
       @service_case.save!
-            
+
       respond_to do |format|
         format.html { redirect_to(service_cases_path) }
         format.xml  { render :xml => @service_case, :status => :created, :location => @service_case }
       end
-      
+
     rescue Exception => e
-      
-      #p "vvvvvvvvvvvvv"
-      #p e.message
+
       @service_case.try(:delete)
-      
+
       @service_case = ServiceCase.new(params[:service_case])
-      
+
       respond_to do |format|
         format.html { render :action => "new" }
         format.xml  { render :xml => @service_case.errors, :status => :unprocessable_entity }
       end
-      
+
     end
-    
+
   end
 
   # PUT /service_cases/1
@@ -133,6 +143,7 @@ class ServiceCasesController < ApplicationController
   # DELETE /service_cases/1
   # DELETE /service_cases/1.xml
   def destroy
+    #require_roles
     @service_case = ServiceCase.find(params[:id])
     @service_case.destroy
 
@@ -141,19 +152,21 @@ class ServiceCasesController < ApplicationController
       format.xml  { head :ok }
     end
   end
-  
+
   def enable
+
     @service_case = ServiceCase.find(params[:id])
     @service_case.save! if @service_case.try(:enable,current_user)
     redirect_to service_cases_path
   end
-  
+
    def disable
+
     @service_case = ServiceCase.find(params[:id])
     @service_case.save! if @service_case.try(:disable,current_user)
     redirect_to service_cases_path
   end
-  
+
   def add_interaction
     if request.post?
       begin
@@ -166,21 +179,21 @@ class ServiceCasesController < ApplicationController
                         ) if @service_case
         @service_case.try(:save!)
       rescue Exception => e
-        
+
       end
       redirect_to ( @service_case || root_path )
     else
-      
+
     end
   end
-  
+
   def assign_case
     if request.post?
       begin
         @service_case = ServiceCase.find(params[:service_case_id])
         @service_case.try(:save!) if @service_case.assign_to(params[:employee])
       rescue Exception => e
-        p "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbssssssssssssssssssssssssssssssssssssss"
+
       end
       redirect_to ( @service_case || root_path )
     else
@@ -188,7 +201,7 @@ class ServiceCasesController < ApplicationController
       @employees = User.employees.active || []
     end
   end
-  
+
   def add_log
     if request.post?
       begin
@@ -196,22 +209,17 @@ class ServiceCasesController < ApplicationController
         @service_case.service_case_logs.build(:log_text => params[:text], :user_id => current_user.id, :created_at => Time.now) if @service_case
         @service_case.try(:save!)
       rescue Exception => e
-        
+
       end
       redirect_to ( @service_case || root_path )
     else
-      
+
     end
   end
-  
+
   def my_cases
-    begin
-      (@service_cases = current_user.assigned_service_cases) + []
-    rescue NoMethodError => e
-       @service_cases = [@service_cases]
-    end
-    @service_cases
+    @service_cases = current_user.assigned_service_cases
   end
-  
-  
+
+
 end

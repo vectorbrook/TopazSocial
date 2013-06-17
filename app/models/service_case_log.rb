@@ -1,8 +1,10 @@
 class ServiceCaseLog
-  include MongoMapper::EmbeddedDocument
-  
-  key :log_text, String, :required => true
-  key :created_at , DateTime
-  key :user_id, ObjectId, :required => true
-  
+  include Mongoid::Document
+
+  embedded_in :service_case
+
+  field :log_text, :type => String
+  field :created_at , :type => DateTime
+  field :user_id, :type => Moped::BSON::ObjectId
+
 end

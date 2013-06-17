@@ -35,7 +35,7 @@ module Permalink
     receiver.extend         ClassMethods
     receiver.send :include, InstanceMethods
     receiver.send :cattr_accessor , :permalink_field , :parent
-    receiver.send :key, :permalink , String
+    receiver.send :field, :permalink , :type => String
     receiver.send :before_save , :check_permalink
   end
 end

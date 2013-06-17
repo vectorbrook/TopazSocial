@@ -1,10 +1,10 @@
 class CmPageCategory < Category
 
-  key :parent_category_id, ObjectId
-  key :level, Integer, :default => 0
-  key :pages, Array
+  field :parent_category_id, :type => Moped::BSON::ObjectId
+  field :level, :type => Integer
+  field :pages, :type => Array
   
-  many :cm_pages
+  has_many :cm_pages
 
   cattr_reader :per_page
   #@@per_page = 25

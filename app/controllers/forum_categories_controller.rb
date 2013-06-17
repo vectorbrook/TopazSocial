@@ -1,7 +1,11 @@
 class ForumCategoriesController < ApplicationController
-  
-  load_and_authorize_resource
-  
+
+  before_filter :check_role, :only => [:index, :show, :new, :edit, :create, :update]
+
+  def check_role
+    is_admin?
+  end
+
   # GET /categories
   # GET /categories.xml
   def index
@@ -9,9 +13,10 @@ class ForumCategoriesController < ApplicationController
     cond_ = {}
     if params[:r]
       cond_ = {:name => /#{params[:r]}/i }
+      @categories = ForumCategory.where(cond_).order_by('created_at DESC').page params[:page]
+    else
+      @categories = (ForumCategory.order_by('created_at DESC').page params[:page]) || []
     end
-    @categories = ForumCategory.paginate :page => params[:page], :order => 'created_at DESC' , :conditions => cond_
-
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @categories }
@@ -94,17 +99,17 @@ class ForumCategoriesController < ApplicationController
       format.xml  { head :ok }
     end
   end
-  
+
   def enable
     @category = ForumCategory.find(params[:id])
     @category.save! if @category.try(:enable,current_user)
-    redirect_to forum_categories_path  
+    redirect_to forum_categories_path
   end
-  
+
    def disable
     @category = ForumCategory.find(params[:id])
     @category.save! if @category.try(:disable,current_user)
     redirect_to forum_categories_path
   end
-  
+
 end

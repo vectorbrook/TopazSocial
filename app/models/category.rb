@@ -1,11 +1,11 @@
 class Category
-  include MongoMapper::Document
+  include Mongoid::Document
+  include Mongoid::Timestamps
   include Enablable
 
-  key :name,           String,   :required => true
-  key :description,    String
-  key :subcategories,  Array
-  timestamps!
+  field :name, :type => String
+  field :description, :type => String
+  field :subcategories,  :type => Array
 
   validates_uniqueness_of :name, :case_sensitive => false
 
@@ -76,4 +76,3 @@ class Category
   end
 
 end
-

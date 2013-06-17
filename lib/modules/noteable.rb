@@ -1,7 +1,7 @@
 module Noteable
-  
+
   module ClassMethods
-    
+
   end
 
   module InstanceMethods
@@ -11,8 +11,7 @@ module Noteable
   def self.included(receiver)
     receiver.extend         ClassMethods
     receiver.send :include, InstanceMethods
-    receiver.send :key, :notes , Array
+    receiver.send :field, :notes , :type => Array
   end
-  
-end
 
+end

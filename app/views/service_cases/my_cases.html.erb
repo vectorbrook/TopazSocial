@@ -3,7 +3,7 @@
   <li class="active">My Service Cases</li>
 <% end %>
 <h2>My ServiceCases</h2>
-<% if @service_cases.size > 0 -%>
+<% if !@service_cases.empty? -%>
 <table class="table table-bordered table-hover" >
   <tr>
     <th>service case name</th>
@@ -12,7 +12,7 @@
     <th>Status</th>
     <th>Description</th>
   </tr>
-<% for service_case in @service_cases %>
+<% @service_cases.each do |service_case| %>
   <tr>
   
     <td><%= link_to service_case.name , service_case_path(service_case) %></td>
@@ -24,4 +24,4 @@
   
 <% end %>
 </table>
-<% end -%>
+<% end %>

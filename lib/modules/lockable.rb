@@ -33,7 +33,7 @@ module Lockable
   def self.included(receiver)
     receiver.extend         ClassMethods
     receiver.send :include, InstanceMethods
-    receiver.send :key, :locked, Boolean, :default => false
+    receiver.send :field, :locked, :type => Boolean, :default => false
   end
 
 end

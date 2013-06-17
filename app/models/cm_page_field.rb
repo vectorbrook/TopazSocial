@@ -1,10 +1,10 @@
 class CmPageField
-  include MongoMapper::EmbeddedDocument
+  include Mongoid::Document
   
   embedded_in :cm_page
   
-  key :name, String, :required => true
-  key :value,String, :required => true
-  key :created_at , DateTime
+  field :name, :type => String
+  field :value, :type => String
+  field :created_at , :type => DateTime
   
 end

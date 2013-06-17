@@ -2,8 +2,6 @@
 class Users::ConfirmationsController < Devise::PasswordsController
   # Remove the first skip_before_filter (:require_no_authentication) if you
   # don't want to enable logged users to access the confirmation page.
-  skip_before_filter :require_no_authentication
-  skip_before_filter :authenticate_user!
 
   # PUT /resource/confirmation
   def update
@@ -22,7 +20,7 @@ class Users::ConfirmationsController < Devise::PasswordsController
     end
 
     if !@confirmable.errors.empty?
-      render 'users/confirmations/new' #Change this if you doens't have the views on default path
+      render 'users/confirmations/new'
     end
   end
 
@@ -36,10 +34,10 @@ class Users::ConfirmationsController < Devise::PasswordsController
       end
     end
     if !@confirmable.errors.empty?
-      render 'users/confirmations/new' #Change this if you doens't have the views on default path 
+      render 'users/confirmations/new'
     end
   end
-  
+
   protected
 
   def with_unconfirmed_confirmable
@@ -53,7 +51,7 @@ class Users::ConfirmationsController < Devise::PasswordsController
     @confirmation_token = params[:confirmation_token]
     @requires_password = true
     self.resource = @confirmable
-    render 'users/confirmations/show' #Change this if you doens't have the views on default path
+    render 'users/confirmations/show'
   end
 
   def do_confirm

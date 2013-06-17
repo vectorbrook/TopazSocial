@@ -1,11 +1,11 @@
 class UsersController < ApplicationController
   
-  load_and_authorize_resource
-  
-  #before_filter :require_admin , :only => [:employees,:non_employees,:edit_employee,:enable_user,:disable_user]
-  #before_filter :require_user , :only => [:follow,:unfollow,:remove_follower,:accept,:decline,:clear_provider_details,:social]
-  #before_filter :require_employee , :only => [:my_cases]
+  #load_and_authorize_resource
 
+  def show
+    @user = User.find(params[:id])
+  end
+  
   def employees
     @users = User.employees.all
   end
@@ -103,4 +103,3 @@ class UsersController < ApplicationController
   end
 
 end
-

@@ -1,40 +1,36 @@
 class CustomerContact
-  include MongoMapper::EmbeddedDocument
+  include Mongoid::Document
+  include Mongoid::Timestamps
   include Noteable
   include Enablable
- 
-  key :first_name, String , :required => true
-  key :last_name, String , :required => true
-  key :phone_number1, String , :required => true
-  key :phone_number2, String 
-  key :phone_number3, String 
-  key :fax_number, String 
-  key :email_addr, String , :required => true
-  key :sell_to, Boolean 
-  key :ship_to, Boolean 
-  key :bill_to, Boolean
-  key :user_id, ObjectId
-  #key :customer_site_id , ObjectId, :required => true
-  #key :notes,  Array, :typecast => 'String'
-  #key :enabled, Boolean, :required => true 
 
-  timestamps!
+  field :first_name, :type => String
+  field :last_name, :type => String
+  field :phone_number1, :type => String
+  field :phone_number2, :type => String
+  field :phone_number3, :type => String
+  field :fax_number, :type => String
+  field :email_addr, :type => String
+  field :sell_to, :type => Boolean
+  field :ship_to, :type => Boolean
+  field :bill_to, :type => Boolean
+  field :user_id, :type => Moped::BSON::ObjectId
 
   embedded_in :customer_site
   belongs_to :user
-  
+
   after_create :create_user
-  
+
   def full_name
     self.first_name + " " + self.last_name
   end
-  
+
   def full_details
     (%w[phone_number1 phone_number2 phone_number3 fax_number email_addr].collect { |a| Util.concatify_attribute(self.send(a.to_sym)) }.join)[2...2000]
   end
-  
+
   protected
-  
+
   def create_user
     contact_user = User.new
     contact_user.name = self.full_name
@@ -44,5 +40,5 @@ class CustomerContact
     self.user_id = contact_user.id
     self.save
   end
-    
+
 end

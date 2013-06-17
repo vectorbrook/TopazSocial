@@ -1,48 +1,52 @@
 class User
-  include MongoMapper::Document
-  
+  include Mongoid::Document
   # Include default devise modules. Others available are:
-  # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
+  # :token_authenticatable, :confirmable,
+  # :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :trackable, :validatable,
-         :token_authenticatable, :confirmable, :lockable, :timeoutable, :omniauthable
-         
-  #devise :encryptable, :encryptor => :bcrypt
+         :recoverable, :rememberable, :trackable, :validatable, :token_authenticatable, :confirmable, :timeoutable, :lockable, :omniauthable
 
   ## Database authenticatable
-  key :email,              String, :default => ""
-  key :encrypted_password, String, :default => ""
+  field :name
+  validates_presence_of :name
+  validates_uniqueness_of :name, :email, :case_sensitive => false
+  attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :provider, :uid
+  field :provider, :type => String
+  field :uid, :type => String
+ 
 
-  validates_presence_of :email
-  validates_presence_of :encrypted_password
+  
+  field :email,              :type => String, :default => ""
+  field :encrypted_password, :type => String, :default => ""
   
   ## Recoverable
-  key :reset_password_token,   String
-  key :reset_password_sent_at, DateTime
+  field :reset_password_token,   :type => String
+  field :reset_password_sent_at, :type => Time
 
   ## Rememberable
-  key :remember_created_at, DateTime
+  field :remember_created_at, :type => Time
 
   ## Trackable
-  key :sign_in_count,      Integer, :default => 0
-  key :current_sign_in_at, DateTime
-  key :last_sign_in_at,    DateTime
-  key :current_sign_in_ip, String
-  key :last_sign_in_ip,    String
+  field :sign_in_count,      :type => Integer, :default => 0
+  field :current_sign_in_at, :type => Time
+  field :last_sign_in_at,    :type => Time
+  field :current_sign_in_ip, :type => String
+  field :last_sign_in_ip,    :type => String
 
   ## Confirmable
-  key :confirmation_token,   String
-  key :confirmed_at,         DateTime
-  key :confirmation_sent_at, DateTime
+   field :confirmation_token,   :type => String
+   field :confirmed_at,         :type => Time
+   field :confirmation_sent_at, :type => Time
+   field :unconfirmed_email,    :type => String # Only if using reconfirmable
 
   ## Lockable
-  key :failed_attempts, Integer, :default => 0 # Only if lock strategy is :failed_attempts
-  key :unlock_token,    String # Only if unlock strategy is :email or :both
-  key :locked_at,       DateTime
+   field :failed_attempts, :type => Integer, :default => 0 # Only if lock strategy is :failed_attempts
+   field :unlock_token,    :type => String # Only if unlock strategy is :email or :both
+   field :locked_at,       :type => Time
 
   ## Token authenticatable
-  key :authentication_token, String
-
+   field :authentication_token, :type => String
+   
   cattr_accessor :private_profiles
 
   def self.initialize_private_profiles
@@ -71,17 +75,19 @@ class User
   PROVIDERS = %w(twitter)
   PROVIDER_FIELDS = %w(uid profile_url token secret)
 
-  key :name , String
-  key :role , Array , :default => ["user"]
+  field :name , :type => String
+  field :role , :type => Array , :default => ["user"]
+  
+
   PROVIDERS.each do |provider|
     PROVIDER_FIELDS.each do |field|
       class_eval <<-KEYS, __FILE__, __LINE__ + 1
-        key "#{provider}_#{field}".to_sym, String, :default => ''
+        field "#{provider}_#{field}".to_sym, :type => String, :default => ''
       KEYS
     end
   end
-  key :active , Boolean , :default => true
-  key :is_private , Boolean , :default => false
+  field :active , :type => Boolean , :default => true
+  field :is_private , :type => Boolean , :default => false
 
   attr_accessor  :old_password, :new_password , :new_password_confirmation, :role_arr
   attr_accessible :password, :password_confirmation, :email, :name, :is_private, :role, :role_arr, *(PROVIDERS).map { |p| ["#{p}_uid".to_sym, "#{p}_profile_url".to_sym] }.flatten
@@ -94,11 +100,9 @@ class User
     end
   end
   
+  
   has_one :customer_contact
 
-  many :followers, :dependent => :destroy, :foreign_key => "follower_id", :class_name => "Follow"
-  many :followings, :dependent => :destroy, :foreign_key => "following_id", :class_name => "Follow"
-  many :follow_requests, :dependent => :destroy, :foreign_key => "following_id", :class_name => "FollowRequest"
 
   scope :employees , where(:role => "employee")
   scope :non_employees , where(:role => (["user"]))
@@ -108,13 +112,13 @@ class User
 
   (ALL_ROLES - ["user"]).each do |role|
     class_eval <<-METHODS, __FILE__, __LINE__ + 1
-      def is_#{role}?
+       def is_#{role}?
         return self.role.include? "#{role}"
       end
-    METHODS
-  end
-
-  def self.create_with_omniauth(auth)
+     METHODS
+   end
+  
+   def self.create_with_omniauth(auth)
     password = Util.generate_alphanumeric_string
     User.create!(:name => auth["info"]["name"] , "#{auth['provider']}_uid".to_sym => auth["uid"] , "#{auth['provider']}_profile_url".to_sym => auth["info"]["urls"]["#{auth["provider"]}".camelize], "#{auth['provider']}_token".to_sym => auth["credentials"]["token"] ,"#{auth['provider']}_secret".to_sym => auth["credentials"]["secret"] ,:email => "u#{Util.generate_alphanumeric_string(3) + Time.now.to_i.to_s}@ts1.com" , :password => password , :password_confirmation => password , :confirmed_at => Time.now , :role => ["user"])
   end
@@ -129,37 +133,6 @@ class User
 
   def confirmation_required?
     (employee_not_admin) && super
-  end
-
-  def follow(following_users_id)
-    return false unless Util.is_ObjectId(following_users_id)
-    return follow_(following_users_id) unless !User.is_profile_private(following_users_id)
-    return FollowRequest.add_request(self.id,following_users_id)
-  end
-
-  def unfollow(following_users_id)
-    return false unless Util.is_ObjectId(following_users_id)
-    return unfollow_(following_users_id)
-  end
-
-  def remove_follower(follower_id)
-    return false unless Util.is_ObjectId(follower_id)
-    return remove_follower_(follower_id)
-  end
-
-  def accept(follow_request_id)
-    return false unless Util.is_ObjectId(follow_request_id)
-    return ( FollowRequest.accept(follow_request_id) and add_follower_by_request(follow_request_id) )
-  end
-
-  def add_follower_by_request(follow_request)
-    return false unless Util.is_ObjectId(follow_request_id)
-    return add_follower_  FollowRequest.initiator(follow_request)
-  end
-
-  def decline(follow_request_id)
-    return false unless Util.is_ObjectId(follow_request_id)
-    return FollowRequest.decline(follow_request_id)
   end
 
   def assigned_service_cases
@@ -219,21 +192,4 @@ class User
     end
   end
 
-  def follow_(user_id)
-    return Util.is_What self.followers.create!(:following_id => user_id), "Follow"
-  end
-
-  def unfollow_(user_id)
-    return ( self.followers.find_by_following_id(user_id).try(:destroy) || false )
-  end
-
-  def remove_follower_(user_id)
-    return ( self.followings.find_by_follower_id(user_id).try(:destroy) || false )
-  end
-
-  def add_follower_(user_id)
-    return Util.is_What self.followings.create!(:follower_id => user_id), "Follow"
-  end
-
 end
-

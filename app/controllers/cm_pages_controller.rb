@@ -1,26 +1,32 @@
 class CmPagesController < ApplicationController
-  
-  load_and_authorize_resource
-  
+
+  before_filter :check_role, :only => [:index, :show, :new, :edit, :create, :update]
+
+  def check_role
+    is_user? || is_employee?
+  end
+
+
   def index
-    #@forums = Forum.all
     cond_ = {}
     if params[:r]
       cond_ = {:title => /#{params[:r]}/i }
-    end
-    @cm_pages = CmPage.where(:title => /#{params[:r]}/i).order(:title).page params[:page]
+      @cm_pages = CmPage.where(cond_).order_by('title DESC').page params[:page]
+    else
 
+      @cm_pages = CmPage.order_by('title DESC').page params[:page]
+    end
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @cm_pages }
     end
   end
-  
+
   # GET /cm_pages/1
   # GET /cm_pages/1.xml
   def show
     @cm_page = CmPage.find_by_slug(params[:id])
-    
+
     session[:back_to] = cm_page_path(@cm_page)
 
     respond_to do |format|
@@ -113,7 +119,6 @@ class CmPagesController < ApplicationController
     @cm_page = CmPage.find_by_slug(params[:id])
     @cm_page.save! if @cm_page.try(:disable,current_user)
     redirect_to @cm_page.forum
-  end  
+  end
 
 end
-
