@@ -22,7 +22,7 @@ Philosophy
   Lightweight: Focus on common use cases
 
 Getting Started
-  Assuming ruby, rails, and mongodb are installed
+  Assuming ruby, rails and mongodb are installed
   bundle install
   rails runner db/seeds.rb (to setup initial admin account and roles)
   rails server  
