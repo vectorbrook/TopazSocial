@@ -2,7 +2,7 @@ Topaz Social README
 
 Technology Stack
 
-  Ruby 1.8.7 (or higher)
+  Ruby 1.9 (or higher)
   Rails 3.2
   MongoDB (no hard dependency on version, but better to use latest version)
   Twitter Bootstrap (the bootstrap css, images, and javascript files are directly 
@@ -44,4 +44,4 @@ You should have received a copy of the GNU General Public License along with Top
 Social. If not, see <http://www.gnu.org/licenses/agpl-3.0.html>.
 
 Topaz Social
-Copyright (C) 2011-2012 by Vector Brook
+Copyright (C) 2011-2013 by Vector Brook
