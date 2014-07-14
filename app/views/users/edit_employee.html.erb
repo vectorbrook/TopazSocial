@@ -16,7 +16,7 @@
     <%= f.label :role11 %>: 
     <input id="user_role_" name="user[role][]" type="hidden" value="" />
     <ul>
-      <% ROLES.each do |role| -%>
+      <% ALL_ROLES.each do |role| -%>
         <li>
           <label for="user_role_<%= role %>">
             <input id="user_role_<%= role %>" name="user[role][]" type="checkbox" value="<%= role %>" <%= (@user.role.include? role) ? "checked='checked'" : "" %> /> 

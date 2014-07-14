@@ -1,0 +1,48 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Forums", forums_path %>
+  <li><%= link_to "Forum Topics", forum_forum_topics_path(@forum) %>
+  <li class="active"> Forum Post</li>
+<% end %>
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <strong>Listing forum_posts</strong>
+  </div>  
+  <table class="table table-bordered table hover">
+    <thead>
+      <tr>
+        <th>Body</th>
+        <th>Description</th>
+        <th>User</th>
+        <th>Status</th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @posts.each do |forum_post| %>
+        <tr>
+          <td><%= forum_post.body %></td>
+          <td><%= forum_post.description %></td>
+          <td><%= forum_post.user_id %></td>
+          <td><%= forum_post.status %></td>
+          <td><%= link_to 'Add to Service Case', forum_forum_topic_forum_post_addto_service_path(@forum,@forum_topic,forum_post) %></td>
+          <td><%= link_to 'Show', forum_forum_topic_forum_post_path(@forum,@forum_topic,forum_post) %></td>
+          <td><%= link_to 'Edit', edit_forum_forum_topic_forum_post_path(@forum,@forum_topic,forum_post) %></td>
+          <td><%= link_to 'Destroy', forum_forum_topic_forum_post_path(@forum,@forum_topic,forum_post), method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+</div> 
+
+<div class="well well-sm">  
+  <%= link_to 'New Forum post', new_forum_forum_topic_forum_post_path(@forum,@forum_topic) %> |
+  <%= link_to 'Back', forum_forum_topics_path(@forum,@forum_topic) %>
+</div>
+<%= paginate @posts %>
+
+<%= page_entries_info @posts %>

@@ -1,0 +1,50 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Forums", forums_path %>
+  <li class="active">Forum Topic </li>
+<% end %>
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <strong>Forum Topic</strong>
+  </div>  
+  <table class="table table-bordered table hover">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Posts count</th>
+        <th>Hits</th>
+        <th>Sticky</th>
+        <th>User</th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @forum_topics.each do |forum_topic| %>
+        <tr>
+          <td><%= forum_topic.title %></td>
+          <td><%= forum_topic.description %></td>
+          <td><%= forum_topic.posts_count %></td>
+          <td><%= forum_topic.hits %></td>
+          <td><%= forum_topic.sticky %></td>
+          <td><%= forum_topic.user_id %></td>
+          <td><%= link_to 'New Post', new_forum_forum_topic_forum_post_path(@forum,forum_topic) %> | <%= link_to 'Show Posts', forum_forum_topic_forum_posts_path(@forum,forum_topic) %></td>
+          <td><%= link_to 'Show', forum_forum_topic_path(@forum,forum_topic) %></td>
+          <td><%= link_to 'Edit', edit_forum_forum_topic_path(@forum,forum_topic) %></td>
+          <td><%= link_to 'Destroy', forum_forum_topic_path(@forum,forum_topic), method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div> 
+
+<div class="well well-sm">  
+<%= link_to 'New Forum topic', new_forum_forum_topic_path(@forum) %> |
+<%= link_to "Forums", forums_path %>
+</div>
+<%= paginate @forum_topics %>
+
+<%= page_entries_info @forum_topics %>

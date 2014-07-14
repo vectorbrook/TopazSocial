@@ -1,50 +1,55 @@
 <% content_for :breadcrumb do %>
  <li class="active">Service case</li>
 <% end %>
-<h2>ServiceCases</h2>
-<% if !@service_cases.empty? -%>
-<table class="table table-bordered table-hover" >
-  <tr>
-    <th>Service Case Name</th>
-    <th>Customer Account Name</th>
-    <th>Priority</th>
-    <th>Status</th>
-    <th>description</th>
-    <th>Assigned To</th>
-    
-  </tr>
-  
-  <% for service_case in @service_cases %>
-    <tr>
-  
-        <td><%= link_to service_case.name , service_case_path(service_case) %></td>
-        <td><%= service_case.customer_account.name %></td>
-        <td><%= service_case.priority %></td>
-        <td><%= service_case.status %></td>
-        <td><%= service_case.description %></td>
-      
-        
-        <% if service_case.assigned? %>
-        <td>  
-            <%= service_case.assigned_user_name(service_case.assigned_to) %>
-          
-          <%= link_to "Re-Assign" , assign_case_path(service_case)%>
-        </td>  
-        <% else %>
-        
-        <td>
-          <%= link_to "Assign" , assign_case_path(service_case)%>
-         </td> 
-        <% end-%>
-        
-        
-     </tr>   
-    
-    
-  <% end %>
- </table>
-<% end -%>
-
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <strong>ServiceCases</strong>
+  </div>
+    <% if !@service_cases.empty? -%>
+      <table class="table table-hover" >
+        <thead>
+          <tr>
+            <th>Service Case Name</th>
+            <th>Customer Account Name</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>description</th>
+            <% if (current_user and (current_user.role.include?("service_manager") || current_user.role.include?("admin"))) %>
+            <th>Assigned To</th>
+            <% end %>
+          </tr>
+        </thead>  
+        <tbody>
+          <% for service_case in @service_cases %>
+            <tr>
+              <td><%= link_to service_case.name , service_case_path(service_case) %></td>
+              <% if service_case.customer_account %>
+                <td><%= service_case.customer_account.name %></td>
+              <% else %>  
+                <td>
+                </td>
+              <% end %>
+              <td><%= service_case.priority %></td>
+              <td><%= service_case.status %></td>
+              <td><%= service_case.description %></td>
+              <% if (current_user and (current_user.role.include?("service_manager") || current_user.role.include?("admin"))) %>
+                <% if service_case.assigned? %>
+                  <td>  
+                    <%= service_case.assigned_user_name(service_case.assigned_to) %>
+                    <%= link_to "Re-Assign" , assign_case_path(service_case)%>
+                  </td>  
+                <% else %>
+                  <td>
+                    <%= link_to "Assign" , assign_case_path(service_case)%>
+                  </td> 
+                <% end-%>
+              <% end %>  
+            </tr>   
+        <% end %>
+      </tbody>  
+   </table>
+  <% end -%>
+</div>
 
 <%= paginate @service_cases %>
 

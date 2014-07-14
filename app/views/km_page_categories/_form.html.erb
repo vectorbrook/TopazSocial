@@ -1,0 +1,65 @@
+
+<%= form_for(@km_page_category, :url => { :controller => controller_name, :action => 'create'}, :html => { :id => "new_km_page_category"}) do |f| %>
+  <% if @km_page_category.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@km_page_category.errors.count, "error") %> prohibited this forum from being saved:</h2>
+
+      <ul>
+      <% @km_page_category.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :parent_category_id %><br>
+    <%= f.collection_select :parent_category_id, KmPageCategory.all, :id, :name, :include_blank => true %>
+  </div>  
+  
+  <div class="field">
+    <%= f.label :name %><br> 
+    <%= f.text_field :name %>
+  </div>
+  
+  <div class="field">
+    <%= f.label :description %><br>
+    <%= f.text_field :description %>
+  </div>  
+    
+  <div class="actions">    
+    <%= f.button :submit %>
+  </div>  
+  
+<% end %>
+<script type="text/javascript">
+  $(document).ready(function() {
+    //alert("hi  a" );
+
+    $('#new_km_page_category').validate({
+      rules: {
+        'km_page_category[name]': {
+          required: true
+        },
+        'km_page_category[description]': {
+          required: true
+        },
+      },
+    highlight: function(element) {
+        $(element).closest('.form-group').addClass('has-error');
+    },
+    unhighlight: function(element) {
+        $(element).closest('.form-group').removeClass('has-error');
+    },
+    errorElement: 'span',
+    errorClass: 'help-block',
+    errorPlacement: function(error, element) {
+        if(element.parent('.input-group').length) {
+            error.insertAfter(element.parent());
+        } else {
+            error.insertAfter(element);
+        }
+    }
+    });
+  });
+</script>

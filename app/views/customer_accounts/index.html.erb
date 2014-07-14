@@ -1,39 +1,43 @@
 <% content_for :breadcrumb do %>
  <li class="active">Customer Accounts</li>
 <% end %>
-<h2>Customer Accounts</h2>
-<table class="table table-bordered table-hover" >
-  <tr>
-    <th>Name</th>
-    <th>Type</th>
-    <th>Description</th>
-    <th>Edit</th>
-    <th>Add Site</th>
-    <th>Enable</th>
-  </tr>
 
-  <% @customer_accounts.each do |customer_account| %>
-    <tr>
-      <td><%= link_to customer_account.name , customer_account_customer_sites_path(customer_account) %></td>
-      <td><%= customer_account.ac_type %></td>
-      <td><%= customer_account.description %></td>    
-      <td><%= link_to customer_account.name , edit_customer_account_path(customer_account) %>
-      </td>
-      <td><%= link_to "Add a Site" , new_customer_account_customer_site_path(customer_account) %></td>
-      <td>
-        <% if customer_account.is_enabled? -%>
-          <%= link_to "Disable" , disable_account_path(customer_account) %>
-        <% else -%>
-          <%= link_to "Enable" , enable_account_path(customer_account) %>
-        <% end -%>
-      </td>
-    </tr>
-  <% end %>
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <strong>Customer Accounts</strong>
+  </div>  
+    <table class="table table-hover" >
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Ac type</th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
 
-</table>
+    <tbody>
+      <% @customer_accounts.each do |customer_account| %>
+        <tr>
+          <td><%= customer_account.name %></td>
+          <td><%= customer_account.description %></td>
+          <td><%= customer_account.ac_type %></td>
+          <td><%= link_to 'New Customer Site', new_customer_account_customer_site_path(customer_account) %> | <%= link_to 'Show Customer Sites', customer_account_customer_sites_path(customer_account) %></td>
+          <td><%= link_to 'Show', customer_account %></td>
+          <td><%= link_to 'Edit', edit_customer_account_path(customer_account) %></td>
+          <td><%= link_to 'Destroy', customer_account, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 
-<p><%= link_to "New Account", new_customer_account_path %></p>
+</div>
 
 
+ 
+<%= paginate @customer_accounts %>
 
-
+<%= page_entries_info @customer_accounts %>

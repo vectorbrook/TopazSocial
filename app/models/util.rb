@@ -12,7 +12,7 @@ class Util
   end
 
   def self.is_ObjectId(object_id)
-    return ( object_id.try(:is_a?,Moped::BSON::ObjectId) || false )
+    return ( object_id.try(:is_a?,BSON::ObjectId) || false )
   end
 
   def self.is_What(obj,klass)
@@ -52,4 +52,3 @@ class Util
   end
 
 end
-

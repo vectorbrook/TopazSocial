@@ -1,0 +1,16 @@
+<% content_for :breadcrumb do %>
+<li><%= link_to "Sales Opportunity", sales_opportunities_path %> 
+ <li class="active">Assigned Sales Opportunity</li>
+<% end %>
+<h3>Assign Sales Opportunity <%= @sales_opportunity.name%></h3>
+
+<%= form_tag('/assign_opportunity') do %>
+  <input type="hidden" id="sales_opportunity_id" name="sales_opportunity_id" value="<%= @sales_opportunity.id.to_s%>">
+  <div class="field">
+    <%= label_tag :employee %><br />
+    <%= select_tag :employee , options_from_collection_for_select(@employees, "id", "name")  %>
+  </div>
+  <div class="actions">
+    <%= submit_tag "Assign opportunity" %>
+  </div>
+<% end -%>

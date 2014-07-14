@@ -1,0 +1,11 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Forums", forums_path %> 
+  <li><%= link_to "Forum Topics", forum_forum_topics_path(@forum) %> 
+  <li><%= link_to "Forum Post", forum_forum_topic_forum_posts_path(@forum, @forum_topic) %> 
+  <li class="active"> <%= @forum_post.body %></li>
+<% end %>
+<h1>Editing forum_post</h1>
+
+<%= render 'form' %>
+
+<%= link_to 'Back', forum_forum_topics_path(@forum,@forum_topic) %>

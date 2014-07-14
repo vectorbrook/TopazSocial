@@ -1,0 +1,27 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  first_name: MyString
+  last_name: MyString
+  phone_number1: MyString
+  phone_number2: MyString
+  phone_number3: MyString
+  fax_number: MyString
+  email_addr: MyString
+  sell_to: false
+  ship_to: false
+  bill_to: false
+  user_id: 
+
+two:
+  first_name: MyString
+  last_name: MyString
+  phone_number1: MyString
+  phone_number2: MyString
+  phone_number3: MyString
+  fax_number: MyString
+  email_addr: MyString
+  sell_to: false
+  ship_to: false
+  bill_to: false
+  user_id: 

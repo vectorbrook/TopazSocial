@@ -1,0 +1,16 @@
+<% content_for :breadcrumb do %>
+<li><%= link_to "Sales Lead", sales_leads_path %> 
+ <li class="active">Assigned Sales Lead</li>
+<% end %>
+<h3>Assign Sales Lead<%= @sales_lead.first_name%></h3>
+
+<%= form_tag('/assign_lead') do %>
+  <input type="hidden" id="sales_lead_id" name="sales_lead_id" value="<%= @sales_lead.id.to_s%>">
+  <div class="field">
+    <%= label_tag :employee %><br />
+    <%= select_tag :employee , options_from_collection_for_select(@employees, "id", "name")  %>
+  </div>
+  <div class="actions">
+    <%= submit_tag "Assign lead" %>
+  </div>
+<% end -%>

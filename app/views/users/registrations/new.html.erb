@@ -8,17 +8,17 @@
   <%= devise_error_messages! %>
 
   <p><%= f.label :name %><br />
-  <%= f.text_field :name %></p>
+  <%= f.text_field :name, :required => true %></p>
 
   <p><%= f.label :email %><br />
-  <%= f.text_field :email %></p>
+  <%= f.text_field :email, :required => true %></p>
 
   <% if is_admin? %>
     <p>
       <%= f.label :role %>:
       <input id="user_role_" name="user[role][]" type="hidden" value="" />
       <ul>
-        <% (ROLES-["admin"]).each do |role| -%>
+        <% (EMPLOYEE_ROLES-["admin","employee"]).each do |role| -%>
           <li>
             <label for="user_role_<%= role %>">
               <input id="user_role_<%= role %>" name="user[role][]" type="checkbox" value="<%= role %>" />

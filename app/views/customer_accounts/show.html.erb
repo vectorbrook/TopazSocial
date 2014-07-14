@@ -1,2 +1,22 @@
-<p id="notice"><%= notice %></p>
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Customer Accounts", customer_accounts_path %>
+  <li class="active"><%= @customer_account.name %></li>
+<% end %>
 
+<p>
+  <strong>Name:</strong>
+  <%= @customer_account.name %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @customer_account.description %>
+</p>
+
+<p>
+  <strong>Ac type:</strong>
+  <%= @customer_account.ac_type %>
+</p>
+
+<%= link_to 'Edit', edit_customer_account_path(@customer_account) %> |
+<%= link_to 'Back', customer_accounts_path %>

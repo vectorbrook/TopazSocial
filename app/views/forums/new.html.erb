@@ -1,28 +1,7 @@
 <% content_for :breadcrumb do %>
-  <li><%= link_to "Forums", forums_path %> <span class="divider">/</span></li>
+  <li><%= link_to "Forums", forums_path %>
   <li class="active">New forums </li>
 <% end %>
-<h1>New Forum</h1>
+<%= render 'form' %>
 
-
-<%= simple_form_for(@forum) do |f| %>
-  <%= f.error_notification %>
-  
-  <% if @forum.forum_category_id and !@forum.forum_category_id.blank? -%>
-    <%= f.hidden_field :forum_category_id %>
-  <% else -%>
-  
-  <%= f.input :forum_category_id , :collection => ForumCategory.all.collect {|fc| [fc.name, fc.id]}, :include_blank => false %>
-  <% end -%>
-  
-  <%= f.input :name %>
-  
-  <%= f.input :description, :as => :text, :input_html => {:size => "60x8"} %>
-  
-    <%= f.button :submit %>
-  
-  
-<% end %>
-
-
-
+<%= link_to 'Back', forums_path %>

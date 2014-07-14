@@ -1,0 +1,65 @@
+<% content_for :breadcrumb do %>
+ <li class="active">Sales Lead</li>
+<% end %>
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <strong>Sales Lead</strong>
+  </div>
+      <table class="table table-hover" >
+        <thead>
+          <tr>
+            <th>Sales Lead Name</th>
+            <th>Customer Account Name</th>
+            <th>Title</th>
+            <th>Company</th>
+            <th>Source</th>
+            <th>Description</th>
+            <th>Type</th>
+            <th>Status</th>
+            <% if (current_user and (current_user.role.include?("sales_manager") || current_user.role.include?("admin"))) %>
+              <th>Assigned To</th>
+            <% end %>  
+          </tr>
+        </thead>  
+        <tbody>
+          <% for sales_lead in @sales_leads %>
+            <tr>
+              <td><%= link_to sales_lead.first_name , sales_lead_path(sales_lead) %></td>
+              <% if sales_lead.customer_account %>
+                <td><%= sales_lead.customer_account.name %></td>
+              <% else %>  
+                <td>
+                </td>
+              <% end %>
+              <td><%= sales_lead.title %></td>
+              <td><%= sales_lead.company %></td>
+              <td><%= sales_lead.source %></td>
+              <td><%= sales_lead.description %></td>
+              <td><%= sales_lead.type %></td>
+              <td><%= sales_lead.status %></td>
+              <% if (current_user and (current_user.role.include?("sales_manager") || current_user.role.include?("admin"))) %>
+
+                <% if sales_lead.assigned? %>
+                  <td>  
+                    <%= sales_lead.assigned_user_name(sales_lead.assigned_to) %>
+                    <%= link_to "Re-Assign" , assign_lead_path(sales_lead)%>
+                  </td>  
+                <% else %>
+                  <td>
+                    <%= link_to "Assign" , assign_lead_path(sales_lead)%>
+                  </td> 
+                <% end-%>
+             <% end %>   
+            </tr>   
+        <% end %>
+      </tbody>  
+   </table>
+</div>
+
+<%= paginate @sales_leads %>
+
+<%= page_entries_info @sales_leads %>
+
+
+
+

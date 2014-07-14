@@ -1,0 +1,24 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "KM Page Category", km_page_categories_path %> <span class="divider">/</span></li>
+  <li class="active"> <%= @km_page_category.name %></li>
+<% end %>
+<table class="table table-bordered table-hover" >
+  <tr>
+    <th>KM Category Name</th>
+    <th>Pages</th>
+  </tr>
+  <tr>
+    <td><%= @km_page_category.name %></td>
+    <td>
+    <% if @km_page_category.km_pages.size > 0 -%>
+     
+      <% @km_page_category.km_pages.each do |t| -%>
+        <%= link_to t.title , km_page_path(t) %>
+      <% end -%>
+    <% end -%>
+    </td>
+  </tr>
+</table>
+
+<%= link_to 'Edit', edit_km_page_category_path(@km_page_category) %> |
+<%= link_to 'Back', :back %>

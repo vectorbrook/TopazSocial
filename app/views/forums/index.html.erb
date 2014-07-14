@@ -1,42 +1,47 @@
 <% content_for :breadcrumb do %>
  <li class="active">Forums </li>
 <% end %>
-<h2>Forums</h2>
-<table class="table table-bordered table-hover">
-<tr>
-  <th>Name</th>
-  <th>Category</th>
-  <th>Description</th>
-  <th>Edit</th>
-  <th>Enable</th>
-  <th>Approve</th>
-</tr>
-  <% for forum in @forums %>
-    <tr>
-      <td><%= link_to forum.name , forum_forum_topics_path(forum) %></td>
-      <td><%= forum.forum_category.name %></td>
-      <td><%= forum.description %></td>
-      <td><%= link_to "Edit", edit_forum_path(forum) %></td>
-      <td><% if forum.is_enabled? -%>
-        <%= link_to "Disable" , disable_forum_path(forum) %>
-      <% else -%>
-        <%= link_to "Enable" , enable_forum_path(forum) %>
-      <% end -%></td>
-      <td><% if forum.is_approved? -%>
-        <%= link_to "Reject" , reject_forum_path(forum) %>
-      <% else -%>
-        <%= link_to "Approve" , approve_forum_path(forum) %>
-      <% end -%></td>
-      
-    </tr>
-  <% end %>
-</table>
+
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <strong>Forums</strong>
+  </div>  
+    <table class="table table-hover" >
+      <thead>
+      <tr>
+        <th>Forum</th>
+        <th>Topics</th>
+        <th>Views</th>
+       <% if current_user %>
+        <th></th>
+        <th></th>
+       <% end %> 
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @forums.each do |forum| %>
+        <tr>
+          <td><%= link_to forum.name, forum_forum_topics_path(forum) %>
+          <table>
+            <td><%="#{"Last Post:"} #{time_ago_in_words(forum.last_post_created_at.to_s) unless forum.last_post_created_at.blank?} #{"ago by"} #{(forum.last_post_created_by.to_s) unless forum.last_post_created_by.blank?}" if forum.last_post_created_at %> </td>
+          </table>
+          
+          </td>
+          <td><%= forum.forum_topics.count %></td>
+          <td><%= forum.hits %></td>
+          
+        <% if current_user %>  
+          <td><%= link_to 'Edit', edit_forum_path(forum) %></td>
+          <td><%= link_to 'Destroy', forum, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
 
 <%= paginate @forums %>
 
-<%= (page_entries_info @forums).html_safe %>
-
-<br class="clear"/>
-
-<p><%= link_to "New Forum", new_forum_path %></p>
+<%= page_entries_info @forums %>
 

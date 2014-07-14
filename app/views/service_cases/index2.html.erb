@@ -1,0 +1,167 @@
+<% content_for :breadcrumb do %>
+ <li class="active">Service case</li>
+<% end %>
+<% content_for :head do %>
+  <%= javascript_include_tag "ang1_app" %>
+<% end %>
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <strong>ServiceCases for assigning to User</strong>
+  </div>
+    <% if !@service_cases.empty? -%>
+      <table class="table table-bordered table-hover" >
+        <thead>
+          <tr>
+            <th>Service Case Name</th>
+            <th>Customer Account Name</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>description</th>
+            <th>Assigned To</th>
+          </tr>
+        </thead>  
+        <tbody>
+          <% for service_case in @service_cases %>
+            <tr>
+              <td><%= link_to service_case.name , service_case_path(service_case) %></td>
+              <% if service_case.customer_account %>
+                <td><%= service_case.customer_account.name %></td>
+              <% else %>  
+                <td>
+                </td>
+              <% end %>
+              <td><%= service_case.priority %></td>
+              <td><%= service_case.status %></td>
+              <td><%= service_case.description %></td>
+                <% if service_case.assigned? %>
+                  <td>  
+                    <%= service_case.assigned_user_name(service_case.assigned_to) %>
+                    <%= link_to "Re-Assign" , assign_case_path(service_case)%>
+                  </td>  
+                <% else %>
+                  <td>
+                    <%= link_to "Assign" , assign_case_path(service_case)%>
+                  </td> 
+                <% end-%>
+            </tr>   
+        <% end %>
+      </tbody>  
+   </table>
+  <% end -%>
+</div>
+</br>
+</br>
+</br>
+
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <strong>ServiceCases</strong>
+  </div>
+</div>
+    <div data-ng-app="msample12">
+      <div data-ng-controller="ServicController">
+         
+        <table class="table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Type</th>
+              <th>Priority</th>
+              <th>Impact</th>
+              <th>Status</th>
+              <th>Solution</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>  
+          <tbody>
+            <tr data-ng-repeat="servic in servics">
+              <td>{{servic.name}}</td>
+              <td>{{servic.description}}</td>
+              <td>{{servic.type}}</td>
+              <td>{{servic.priority}}</td>
+              <td>{{servic.impact}}</td>
+              <td>{{servic.status}}</td>
+              <td>{{servic.solution}}</td>
+              <td><button data-ng-click="destroy($index)" >Delete</button></td>
+              <td><button data-ng-click="edit(servic,$index)" >Edit</button></td>
+            </tr>            
+          </tbody>  
+                  
+        </table>    
+
+        <div data-ng-show="showNew">
+          <div class="form-group">
+            <lable>Name</lable><input type="text" data-ng-model="servicModel.name" class="form-control" style="width:500px;" /></br>
+            <lable>Description</lable><textarea data-ng-model="servicModel.description" class="form-control" rows="4" cols="50" style="width:500px;" >
+            </textarea>
+            </br>
+           <lable>Type</lable><input type="text" data-ng-model="servicModel.type" class="form-control" style="width:500px;" /></br>
+           <lable>Priority</lable><select data-ng-model="servicModel.priority" class="form-control" style="width:500px;" >
+                   <option value="1">1</option>
+                   <option value="2">2</option>
+                   <option value="3">3</option>
+                   <option value="4">4</option>
+                   <option value="5">5</option>
+                   <option value="6">6</option>
+                   <option value="7">7</option>
+                   <option value="8">8</option>
+                   <option value="9">9</option>
+                   <option value="10">10</option>
+           </select></br>
+           <lable>Impact</lable><input type="select" data-ng-model="servicModel.impact" class="form-control" style="width:500px;" /></br>
+           <lable>Status</lable><select data-ng-model="servicModel.status" class="form-control" style="width:500px;" >
+                   <option value="New">New</option>
+                   <option value="Open">Open</option>
+                   <option value="Closed">Closed</option>
+                   <option value="Pending">Pending</option>
+                   <option value="Information Requested">Information Requested</option>
+                   <option value="Assigned">Assigned</option>
+            </select></br>
+           <lable>Solution</lable><input type="text" data-ng-model="servicModel.solution" class="form-control" style="width:500px;" /></br>
+            <button data-ng-click="addServic()" class="btn btn-primary" >New Service Case</button>
+          </div>
+        </div>
+
+        <div data-ng-show="showUpdate">
+          <div class="form-group">
+            <input type="hidden" data-ng-model="uservicModel._id" />
+            <lable>Name</lable><input type="text" data-ng-model="uservicModel.name" class="form-control" style="width:500px;" /></br>
+            <lable>Description</lable><textarea data-ng-model="uservicModel.description" class="form-control" style="width:500px;" rows="4" cols="50" ></textarea></br>
+            <lable>Type</lable><input type="text" data-ng-model="uservicModel.type" class="form-control" style="width:500px;" /></br>
+            <lable>Priority</lable><select data-ng-model="uservicModel.priority" class="form-control" style="width:500px;" >
+                   <option value="1">1</option>
+                   <option value="2">2</option>
+                   <option value="3">3</option>
+                   <option value="4">4</option>
+                   <option value="5">5</option>
+                   <option value="6">6</option>
+                   <option value="7">7</option>
+                   <option value="8">8</option>
+                   <option value="9">9</option>
+                   <option value="10">10</option>
+           </select></br>
+            <lable>Impact</lable><input type="text" data-ng-model="uservicModel.impact" class="form-control" style="width:500px;" /></br>
+            <lable>Status</lable><select data-ng-model="uservicModel.status" class="form-control" style="width:500px;" />
+              <option value="New">New</option>
+              <option value="Open">Open</option>
+              <option value="Closed">Closed</option>
+              <option value="Pending">Pending</option>
+              <option value="Information Requested">Information Requested</option>
+              <option value="Assigned">Assigned</option>
+            </select></br>
+            <lable>Solution</lable><input type="text" data-ng-model="uservicModel.solution" class="form-control" style="width:500px;" /></br>
+            <button data-ng-click="update()" class="btn btn-primary">Update Service Case</button>
+          </div>
+        </div>
+    
+  </div>
+</div>
+<%= paginate @service_cases %>
+
+<%= page_entries_info @service_cases %>
+
+
+
+

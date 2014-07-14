@@ -1,0 +1,28 @@
+<h2>Posts CRUD using AngularJS </h2>
+
+<div data-ng-app="msample1">
+
+  <div data-ng-controller="PostController">
+    <ul>
+      <li data-ng-repeat="post in posts">
+        <div><label>Title: {{post.title}}</label></div>
+        <div><label>Content: {{post.content}}</label></div>
+        <button data-ng-click="destroy($index)" >Delete</button>
+        <button data-ng-click="edit(post,$index)" >Edit</button>
+      </li>
+    </ul>
+    <div data-ng-show="showNew">
+      <input type="text" data-ng-model="postModel.title" />
+      <input type="text" data-ng-model="postModel.content" />
+      <button data-ng-click="addPost()">New Post</button>
+    </div>
+
+    <div data-ng-show="showUpdate">
+      <input type="hidden" data-ng-model="upostModel._id" />
+      <input type="text" data-ng-model="upostModel.title" />
+      <input type="text" data-ng-model="upostModel.content" />
+      <button data-ng-click="update()" >Update Post</button>
+    </div>
+
+  </div>
+</div>

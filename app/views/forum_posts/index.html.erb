@@ -1,0 +1,60 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Forums", forums_path %>
+  <li><%= link_to "Forum Topics", forum_forum_topics_path(@forum) %>
+  <li class="active"> Forum Post</li>
+<% end %>
+<% if current_user %>
+    <div class="well well-sm">
+      <%= link_to 'New Forum post', new_forum_forum_topic_forum_post_path(@forum,@forum_topic) %>
+    </div>  
+<% else %>
+    <div class="well well-sm">
+     <%= link_to 'New Forum post', login_path %>
+    </div>
+<% end %> 
+<% if @forum_posts and @forum_posts.size > 0 -%> 
+<div class="panel panel-info">
+  <div class="panel-heading">
+      <strong>Listing Forum Posts</strong>
+  </div>
+  <table class="table table hover">
+    <thead>
+      <tr>
+        <th>Created by</th>
+        <th></th>
+        <th>Body</th>
+        <th>Description</th>
+        <% if current_user %>        
+          <th></th>
+          <th></th>
+          <th></th>
+        <% end %>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @posts.each do |forum_post| %>
+        <tr>
+          <td><%= forum_post.user.email if forum_post.user %></td>
+          <td><%= "#{time_ago_in_words(forum_post.created_at.to_s) unless forum_post.created_at.blank?} #{"ago"}" %> </td>
+          <td><%= forum_post.body %></td>
+          <td><%= forum_post.description %></td>
+          <% if current_user %>   
+            <td><%= link_to 'Add to Service Case', forum_forum_topic_forum_post_addto_service_path(@forum,@forum_topic,forum_post) %></td>
+            <td><%= link_to 'Edit', edit_forum_forum_topic_forum_post_path(@forum,@forum_topic,forum_post) %></td>
+            <td><%= link_to 'Destroy', forum_forum_topic_forum_post_path(@forum,@forum_topic,forum_post), method: :delete, data: { confirm: 'Are you sure?' } %></td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+</div> 
+
+
+<% end %>
+<%= link_to 'Back', forum_forum_topics_path(@forum,@forum_topic) %>
+<br />
+<%= paginate @posts %>
+
+<%= page_entries_info @posts %>

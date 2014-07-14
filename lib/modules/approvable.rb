@@ -51,7 +51,7 @@ module Approvable
     receiver.extend         ClassMethods
     receiver.send :include, InstanceMethods
     receiver.send :field, :approved, :type => Boolean, :default => false
-    receiver.send :field, :approved_by , :type => Moped::BSON::ObjectId
+    receiver.send :field, :approved_by , :type => BSON::ObjectId
     receiver.send :before_save , :check_approval
   end
 end

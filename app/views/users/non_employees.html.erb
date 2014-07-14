@@ -1,29 +1,35 @@
 <% content_for :breadcrumb do %>
  <li class="active">General User Administration</li>
 <% end %>
-<h1>General  Users Administration</h1>
 
-<table class="table-bordered table-hover">
-  <tr>
-    <th>Name</th>
-    <th>E-mail</th>
-    <th></th>
-  </tr>
-
-<% @users.each do |user| -%>
-  <tr>
-    <td><%= user.name || " " %></td>
-    <td><%= link_to user.email , edit_employee_path(user) %></td>
-    <td>
-      <% if user.access_locked? -%>
-        <%= link_to "Enable" , enable_user_path(user) %>
-      <% else -%>
-        <%= link_to "Disable" , disable_user_path(user) %>
-      <% end -%>
-    </td>  
-  </tr>
-<% end -%>
-</table>
-
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <strong>General  Users Administration</strong>
+  </div>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>E-mail</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @users.each do |user| -%>
+          <tr>
+            <td><%= user.name || " " %></td>
+            <td><%= link_to user.email , edit_employee_path(user) %></td>
+            <td>
+              <% if user.access_locked? -%>
+                <%= link_to "Enable" , enable_user_path(user) %>
+              <% else -%>
+                <%= link_to "Disable" , disable_user_path(user) %>
+              <% end -%>
+            </td>  
+          </tr>
+        <% end -%>
+      </tbody> 
+    </table>
+</div>
 
 

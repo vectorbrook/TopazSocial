@@ -1,48 +1,62 @@
 <% content_for :breadcrumb do %>
-  <li><%= link_to "Forums", forums_path %> <span class="divider">/</span></li>
-  <li><%= link_to "Forum Topics", forum_forum_topics_path(@topic.forum) %> <span class="divider">/</span></li>
-  <li class="active">  <%= @topic.title %></li>
+  <li><%= link_to "Forums", forums_path %> 
+  <li><%= link_to "Forum Topics", forum_forum_topics_path(@forum) %> 
+  <li class="active">  <%= @forum_topic.title %></li>
 <% end %>
-<table class="table table-bordered table-hover" >
-  <h3><%= @topic.title %></h3>
-  <tr>
-    <th>Created Time</th>
-    <th>Updated Time</th>
-    <th>Posts</th>
-    <th></th>
-    <th></th>
-  </tr>
-    <% if @interactions.size > 0 -%>
-      <% @interactions.each do |p| -%>
-        <tr>
-          <td><%= p.created_at %></td>
-          <td><%= p.updated_at %></td>
-          <td><%= p.body %></td>
-          <td><%= link_to 'Edit Post', edit_interaction_path(p) %></td>
-          <td><%= link_to 'Delete Post', interaction_path(p) , :method => :delete , :confirm => "Are you sure?"%></td>
-        </tr> 
-        <% end -%>
-       
-      <% end -%>
-      
-    
- 
-</table>
-
-<%= simple_form_for(@interaction) do |f| %>
-  <%= f.error_notification %>
-  
-  
-    <%= f.hidden_field :parent_context_id  %>
-    <%= f.hidden_field :parent_context  %>
-    <%= f.hidden_field :context_id  %>
-    <%= f.hidden_field :context  %>
-    <%= f.input :body, :as => :text, :input_html => {:size => "60x8"} %>
-  
-    <%= f.submit "Add a Post" %>
-  
+<% content_for :head do %>
+  <%= javascript_include_tag "ang_app" %>
 <% end %>
 
-<!-- <%= link_to "Add a Post" , new_forum_topic_interaction_path(@topic) %> -->
 
+<p id="notice"><%= notice %></p>
 
+<p>
+  <strong>Title:</strong>
+  <%= @forum_topic.title %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @forum_topic.description %>
+</p>
+
+<p>
+  <strong>User:</strong>
+  <%= @forum_topic.user_id %>
+</p>
+
+<%= link_to 'Edit', edit_forum_forum_topic_path(@forum,@forum_topic) %> |
+<%= link_to 'Back', forum_forum_topics_path(@forum) %>
+
+<h2>Posts</h2>
+
+<div data-ng-app="msample1">
+
+  <div data-ng-controller="ForumController">
+    <span data-ng-init="forum_id_pl = '<%= @forum.id.to_s %>'"></span>
+    <span data-ng-init="forum_topic_id_pl = '<%= @forum_topic.id.to_s %>'"></span>
+</div>
+
+  <div data-ng-controller="PostController" data-ng-init="init('<%= @forum.id %>','<%= @forum_topic.id %>')">
+    <input type="hidden"data-ng-model="forum_id" value="<%= @forum.id %>" />
+    <input type="hidden" data-ng-model="forum_topic_id" value="<%= @forum_topic.id %>" />
+    <ul>
+      <li data-ng-repeat="post in posts">
+        <div><label> {{post.body}}</label></div>
+        <button data-ng-click="destroy($index)" >Delete</button>
+        <button data-ng-click="edit(post,$index)" >Edit</button>
+      </li>
+    </ul>
+    <div data-ng-show="showNew">
+      <input type="text" data-ng-model="postModel.body" />
+      <button data-ng-click="addPost()">New Post</button>
+    </div>
+
+    <div data-ng-show="showUpdate">
+      <input type="hidden" data-ng-model="upostModel._id" />
+      <input type="text" data-ng-model="upostModel.body" />
+      <button data-ng-click="update()" >Update Post</button>
+    </div>
+
+  </div>
+</div>

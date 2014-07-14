@@ -1,10 +1,10 @@
 <% content_for :breadcrumb do %>
-  <li><%= link_to "Forums", forums_path %> <span class="divider">/</span></li>
-  <li><%= link_to "Forum Topics", forum_forum_topics_path(@forum) %> <span class="divider">/</span></li>
-  <li class="active"> <%= @forum.name %> </li>
+  <li><%= link_to "Forums", forums_path %> 
+  <li><%= link_to "Forum Topics", forum_forum_topics_path(@forum) %> 
+  <li class="active"> <%= @forum_topic.title %> </li>
 <% end %>
-<h1>Editing <%= @forum.name %> Topic <%= @topic.title %></h1>
-
+<h2>Editing <%= @forum.name %> for Topic <%= @forum_topic.title %></h2>
 <%= render 'form' %>
 
-<%= link_to 'Back', :back %>
+<%= link_to 'Show', forum_forum_topic_path(@forum,@forum_topic) %> |
+<%= link_to 'Back', forum_forum_topics_path(@forum) %>

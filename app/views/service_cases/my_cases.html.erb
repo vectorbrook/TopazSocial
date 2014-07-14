@@ -1,27 +1,34 @@
 <% content_for :breadcrumb do %>
-  <li><%= link_to "Service Cases", service_cases_path %> <span class="divider">/</span></li>
+  <li><%= link_to "Service Cases", service_cases_path %> 
   <li class="active">My Service Cases</li>
 <% end %>
-<h2>My ServiceCases</h2>
-<% if !@service_cases.empty? -%>
-<table class="table table-bordered table-hover" >
-  <tr>
-    <th>service case name</th>
-    <th>Customer Account Name</th>
-    <th>Priority</th>
-    <th>Status</th>
-    <th>Description</th>
-  </tr>
-<% @service_cases.each do |service_case| %>
-  <tr>
-  
-    <td><%= link_to service_case.name , service_case_path(service_case) %></td>
-    <td><%= service_case.customer_account.name %></td>
-    <td><%= service_case.priority %></td>
-    <td><%= service_case.status %></td>
-    <td><%= service_case.description %></td>      
-  </tr>
-  
-<% end %>
-</table>
-<% end %>
+
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <strong>My ServiceCases</strong>
+  </div>  
+    <% if !@service_cases.empty? -%>
+      <table class="table table-hover" >
+        <thead>
+          <tr>
+            <th>service case name</th>
+            <th>Customer Account Name</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @service_cases.each do |service_case| %>
+            <tr>
+              <td><%= link_to service_case.name , service_case_path(service_case) %></td>
+              <td><%= service_case.customer_account.name %></td>
+              <td><%= service_case.priority %></td>
+              <td><%= service_case.status %></td>
+              <td><%= service_case.description %></td>      
+            </tr>
+          <% end %>
+        </tbody>  
+      </table>
+    <% end %>
+</div>

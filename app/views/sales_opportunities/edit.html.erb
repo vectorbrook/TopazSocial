@@ -1,0 +1,8 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Sales Opportunities", sales_opportunities_path %> 
+  <li class="active">Edit Service Case</li>
+<% end %>
+<h1>Editing Service Case: <%= @sales_opportunity.name %></h1>
+
+<%= render 'form' %>
+

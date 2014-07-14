@@ -14,7 +14,7 @@ class Category
 
   attr_accessor :new_subcats, :rem_subcats
 
-  scope :active,  where(:enabled => true)
+  scope :active,  ->{ where(:enabled => true) }
 
   def to_s
     self.name

@@ -1,0 +1,8 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Sales Leads", sales_leads_path %> 
+  <li class="active">Edit Sales Lead</li>
+<% end %>
+<h1>Editing Sales Lead <%= @sales_lead.first_name %></h1>
+
+<%= render 'form' %>
+

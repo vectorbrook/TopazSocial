@@ -1,0 +1,89 @@
+  <h3>Find Users to follow</h3>
+
+
+  <form id="search_categories" method="get" action="/find_users" >
+    <table>
+    <tr>
+      <td>
+        <input type="text" id="r" name="r" value="" size="30" 
+              style ="width:220px;"
+		          onfocus="document.forms['search_categories'].r.value='';"
+		          onblur="if (document.forms['search_categories'].r.value == '')
+		          document.forms['search_categories'].r.value='Search Users';" class="required" />
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <input type="submit" id="search-submit" value="Search Users to follow" />
+      </td>
+    </tr>
+    </table>
+  </form>
+ <br />
+    <% if @users -%>
+      <% if @users.empty? %>
+        <strong>We couldn’t find users to follow.</strong>
+      <% else %>
+      <table class="table table-striped table-hover">
+        <% @users.each do |user| -%>
+        <tr>
+          <td><%= link_to user.name, show_profile_path(user) %></td>
+          <td>
+            <% if user.followers != [] %>
+              <%= link_to "Unfollow" , unfollow_path(user) %>
+            <% else %>
+              <%= link_to "Follow" , follow_path(user) %>
+            <% end -%>
+          </td>
+          <td>
+            <%= link_to "Block this User" , block_user_path(user) %>
+          </td>
+        </tr> 
+        <% end %>
+      </table>  
+      <% end %>
+    <% end %>  
+ <br />
+
+    <% if @followings  and @followings.size > 0 -%> 
+      <strong>Following</strong>
+      <table class="table table-striped table-hover">
+        <% @followings.each do |user| -%>
+        <tr>
+          <td><%= link_to user.name, show_profile_path(user) %></td>
+          <td>
+            <% if user.followers != [] %>
+              <%= link_to "Unfollow" , unfollow_path(user) %>
+            <% else %>
+              <%= link_to "Follow" , follow_path(user) %>
+            <% end -%>
+          </td>
+        </tr> 
+        <% end %>
+      </table>  
+    <% end %>
+ <br />  
+ 
+    <% if @followers  and @followers.size > 0 -%> 
+      <strong>Followers</strong>
+      <table class="table table-striped table-hover">
+        <% @followers.each do |user| -%>
+        <tr>
+          <td><%= link_to user.name, show_profile_path(user) %></td>
+          <td>
+            <% if user.followers != [] %>
+              <%= link_to "Unfollow" , unfollow_path(user) %>
+            <% else %>
+              <%= link_to "Follow" , follow_path(user) %>
+            <% end -%>
+          </td>
+          <td>
+            <%= link_to "Block this User" , block_user_path(user) %>
+          </td>
+        </tr> 
+        <% end %>
+      </table>  
+    <% end %>
+
+

@@ -1,0 +1,21 @@
+
+<% p @service_case -%>
+<%= simple_form_for(@service_case) do |f| %>
+  <%= f.error_notification %>
+  
+  
+    <%= f.input :customer_account_id , :collection => CustomerAccount.all.collect {|ca| [ca.name, ca.id]}, :include_blank => false %>
+    <%= f.input :name  %>
+    <%= f.input :description, :as => :text, :input_html => {:size => "60x8"}  %>
+    <%= f.input :type %>
+    <%= f.input :priority , :collection => SERVICECASE_PRIORITIES , :include_blank => false %>
+    <%= f.input :impact  %>
+    <%= f.input :status , :collection => SERVICECASE_STATUSES , :include_blank => false %>
+    <%= f.input :solution  %>
+  
+    <%= f.button :submit %>
+  
+  
+  
+<% end %>
+

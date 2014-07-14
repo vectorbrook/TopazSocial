@@ -1,0 +1,37 @@
+<% content_for :breadcrumb do %>
+ <li class="active">KM Page Categories</li>
+<% end %>
+
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <strong>Categories</strong>
+  </div>  
+    <table class="table table-hover" >
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Ancestry</th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>  
+      <tbody>
+  
+        <% for category in @km_page_categories %>
+          <tr>
+            <td><%= link_to category.name , km_page_category_km_pages_path(category) %></td>
+            <td><%= category.ancestry.join(' -> ') %></td>
+            <td><%= link_to "Add Page" , new_km_page_category_km_page_path(category) %></td>
+            <td><%= link_to "Edit" , edit_km_page_category_path(category) %></td>          
+            <td><% if category.is_enabled? -%>
+              <%= link_to "Disable" , disable_km_page_category_path(category) %>
+            <% else -%>
+              <%= link_to "Enable" , enable_km_page_category_path(category) %>
+            <% end -%></td>
+          </tr>
+        <% end %>
+    </tbody>
+  </table>
+
+</div>

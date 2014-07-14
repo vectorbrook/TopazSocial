@@ -1,9 +1,8 @@
 <% content_for :breadcrumb do %>
-  <li><%= link_to "Service Cases", service_cases_path  %> <span class="divider">/</span></li>
+  <li><%= link_to "Service Cases", service_cases_path  %> 
   
   <li class="active"><%= @service_case.name %></li>
 <% end %>
-<p id="notice"><%= notice %></p>
 <h1><%= @service_case.name %></h1>
 <table class="table table-bordered table-hover" >
   <tr>
@@ -16,7 +15,12 @@
   </tr>
   <tr>
     <td><%= @service_case.name %></td>
+    <% if @service_case.customer_account %>
     <td><%= @service_case.customer_account.name %></td>
+    <% else %>
+      <td>
+      </td>
+    <% end %> 
     <td><%= @service_case.priority %></td>
     <td><%= @service_case.status %></td>
     <td><%= @service_case.description %></td>
@@ -40,36 +44,38 @@
       </table>
     <% end -%>
    
-    <% if @service_case.interactions.size > 0 -%>
+    <% if @service_case.service_case_interactions.size > 0 -%>
       <h3>Customer Interaction</h3>
       <table class="table table-bordered table-hover" >
         <tr>
-          <th>Body</th>
-          <th>status</th>
-          <th>Solution</th>
+          <th>Interaction Text</th>
           <th>Created at</th>
         </tr>
-        <% @service_case.interactions.each do |t| -%>
+        <% @service_case.service_case_interactions.each do |t| -%>
           <tr>
-            <td><%= t.body %></td>
-            <td><%= t.status %></td>
-            <td><%= t.solution %></td>
+            <td><%= t.interaction_text %></td>
             <td><%= t.created_at %></td>
           </tr>
         <% end -%>
       </table>
     <% end -%>
    
-  
+    <p>
       <h4>Add new Customer Interaction:</h4>
-        <%= simple_form_for(@interaction) do |f| %>
-          <%= f.hidden_field :context_id  %>
-          <%= f.hidden_field :context  %>
-          <%= f.input :body, :as => :text, :input_html => {:size => "60x8"} %>
-          <%= f.input :status %>
-          <%= f.input :solution %>
-          <%= f.submit "Add Interaction" %>
-        <% end -%>
+      <%= form_tag('/add_interaction') do |f| %>
+        <div class="field">
+          <%= hidden_field_tag :service_case_id, @service_case.id  %>
+        </div>        
+        <div class="field">
+          <%= label_tag :interaction_text  %><br />
+          <%= text_area_tag :interaction_text %>
+        </div>
+        <div class="actions">
+          <%= submit_tag "Customer Interaction" %>
+        </div>
+      <% end -%>
+    </p>
+
    
     
     <p>

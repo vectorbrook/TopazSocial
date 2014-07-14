@@ -1,0 +1,122 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Sales Lead", sales_leads_path %> 
+  
+  <li class="active"><%= @sales_lead.first_name %></li>
+<% end %>
+<h1><%= @sales_lead.first_name %></h1>
+<table class="table table-bordered table-hover" >
+  <tr>
+    <th>First Name</th>
+    <th>Last Name</th>
+    <th>Customer Account Name</th>
+    <th>Title</th>
+    <th>Company</th>
+    <th>Phone Number 1</th>
+    <th>email address</th>
+    <th>address_line1</th>
+    <th>city</th>
+    <th>state</th>
+    <th>twitter</th>
+    <th>source</th>
+    <th>Description</th>
+    <th>Type</th>
+    <th>Status</th>
+    
+  </tr>
+  <tr>
+    <td><%= @sales_lead.first_name %></td>
+    <td><%= @sales_lead.last_name %></td>
+
+    <% if @sales_lead.customer_account %>
+    <td><%= @sales_lead.customer_account.name %></td>
+    <% else %>
+      <td>
+      </td>
+    <% end %> 
+    <td><%= @sales_lead.title %></td>
+    <td><%= @sales_lead.company %></td>
+    <td><%= @sales_lead.phone_number1 %></td>
+    <td><%= @sales_lead.email_addr %></td>
+    <td><%= @sales_lead.address_line1 %></td>
+    <td><%= @sales_lead.city %></td>
+    <td><%= @sales_lead.state %></td>
+    <td><%= @sales_lead.twitter %></td>
+    <td><%= @sales_lead.source %></td>
+    <td><%= @sales_lead.description %></td>
+    <td><%= @sales_lead.type %></td>
+    <td><%= @sales_lead.status %></td>
+  </tr>
+</table> 
+  
+    
+    <% if @sales_lead.sales_lead_logs.size > 0 -%>
+      <h3>Log History</h3>
+      <table class="table table-bordered table-hover" >
+        <tr>
+          <th>Log Text</th>
+          <th>Created at</th>
+        </tr>
+          <% @sales_lead.sales_lead_logs.each do |t| -%>
+            <tr>
+              <td><%= t.log_text %></td>
+              <td><%= t.created_at %></td>
+            </tr>
+        <% end -%>
+      </table>
+    <% end -%>
+   
+    <% if @sales_lead.sales_lead_interactions.size > 0 -%>
+      <h3>Customer Interaction</h3>
+      <table class="table table-bordered table-hover" >
+        <tr>
+          <th>Interaction Text</th>
+          <th>Created at</th>
+        </tr>
+        <% @sales_lead.sales_lead_interactions.each do |t| -%>
+          <tr>
+            <td><%= t.interaction_text %></td>
+            <td><%= t.created_at %></td>
+          </tr>
+        <% end -%>
+      </table>
+    <% end -%>
+   
+    <p>
+      <h4>Add new Customer Interaction:</h4>
+      <%= form_tag('/add_lead_interaction') do |f| %>
+        <div class="field">
+          <%= hidden_field_tag :sales_lead_id, @sales_lead.id  %>
+        </div>        
+        <div class="field">
+          <%= label_tag :interaction_text  %><br />
+          <%= text_area_tag :interaction_text %>
+        </div>
+        <div class="actions">
+          <%= submit_tag "Customer Interaction" %>
+        </div>
+      <% end -%>
+    </p>
+
+   
+    
+    <p>
+      <h4>Log Entry:</h4>
+      <%= form_tag('/add_lead_log') do |f| %>
+        <div class="field">
+          <%= hidden_field_tag :sales_lead_id, @sales_lead.id  %>
+        </div>        
+        <div class="field">
+          <%= label_tag :Text  %><br />
+          <%= text_area_tag :text %>
+        </div>
+        <div class="actions">
+          <%= submit_tag "Add Log Entry" %>
+        </div>
+      <% end -%>
+    </p>
+    
+  </p>
+
+<%= link_to "Assign" , assign_lead_path(@sales_lead)%>
+<%= link_to 'Edit', edit_sales_lead_path(@sales_lead) %> |
+<%= link_to 'Back', :back %>

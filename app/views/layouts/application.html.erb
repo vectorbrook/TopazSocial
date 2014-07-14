@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  
   <meta charset="utf-8" />
   <title>TopazSocial</title>
   <!--[if lt IE 9]>
@@ -9,6 +10,10 @@
   <%= stylesheet_link_tag    "application.css", :media => "all" %>
   <%= stylesheet_link_tag    "bootstrap.min.css" %>
   <%= javascript_include_tag "application.js" %>
+  <%= javascript_include_tag "jquery.min.js" %>
+  <%= javascript_include_tag "jquery.validate.min.js" %>
+
+
   
   <%= csrf_meta_tags %>
   <%= yield(:head) %>
@@ -17,54 +22,227 @@
 </head>
 <!DOCTYPE html>
 
-
-
   <body>
-
     <!-- header -->
-    <div class="navbar">
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+    <nav class="navbar navbar-inverse">
+      <div class="container">
+        <div class="navbar-header">
+          
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="/">Topaz Social</a>
-          <div class="nav-collapse">          
-            <ul class="nav pull-right">
-              <% if current_user %>
-                
-                  <%= t("welcome" , :default => "Welcome") %> <%=  link_to (current_user.name || "User") , edit_user_registration_path(current_user) %>! | <%= link_to t("sign_out" ,:default => "Sign Out"),  "/logout" , { :title => "Log out" }  %>
-                
-              <% else %>
-                  <%= t("sign_in" , :default => "Sign in using") %>:&nbsp;
-                    <% if is_twitter_enabled? -%>
-                      <a href="<%= user_omniauth_authorize_path(:twitter) %>">
-                        <%= image_tag "tw.png" %> 
-                      </a>
-                    <% end -%>                  
-                    <%= link_to t("employee_login", :default => "Employee Login") , login_path %>
-              <% end %>
-            </ul>
-          </div><!-- /.nav-collapse -->
-        </div><!-- /container -->
-      </div><!-- /navbar-inner -->
-    </div><!-- /navbar -->
+          </button>  
+          <a class="navbar-brand" href="/">Topaz Social</a>
+        </div>  
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown" href="#"> Communities
+                <b class="caret"></b>
+              </a>
+                <ul class="dropdown-menu">
+                  <% if is_admin? || is_community_manager? %> 
+                  <li>
+                    <%= link_to t("forums" , :default => "Create Forum"), new_forum_path , :class => ( ( controller_name == "forums" ) ? "active" : "" )%>
+                  </li>
+                  <% end %>
+                  <li>
+                    <%= link_to t("forums" , :default => "All Forums"), forums_path , :class => ( ( controller_name == "forums" )  ? "active" : "" ) %>
+                  </li>
+                </ul>
+            </li>
+            <% if is_admin? %>  
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#"> Knowledge
+                 <b class="caret"></b>
+                </a>
+                  <ul class="dropdown-menu">
+                      <li>
+                        <%= link_to t("km_page_categories" , :default => "Create Category"), new_km_page_category_path , :class => ( ( controller_name == "km_page_categories" ) ? "active" : "" )%>
+                      </li>
+                      <li>
+                        <%= link_to t("km_page_categories" , :default => "Categories"), km_page_categories_path , :class => ( ( controller_name == "km_page_categories" ) ? "active" : "" ) %>
+                      </li>
+                  </ul>
+              </li>
+            <% end %> 
+              <li class="dropdown">
+                <% if is_admin? || is_sales_manager? || is_sales_engineer?  -%>
+                  <a class="dropdown-toggle" data-toggle="dropdown" href="#"> Leads
+                    <b class="caret"></b>
+                  </a>
+                <% end %>
+                  <ul class="dropdown-menu">
+                    <% if is_admin? || is_sales_manager? %>
+                    <li>
+                      <%= link_to t("sales_leads" , :default => "Create Lead"), new_sales_lead_path , :class => ( ( controller_name == "sales_leads" ) ? "active" : "" )%>
+                    </li>
+                    <% end %>
+                    <% if is_admin? || is_sales_manager? || is_sales_engineer? %>
+                    <li>
+                      <%= link_to t("sales_leads" , :default => "All Leads"), sales_leads_path , :class => ( ( controller_name == "sales_leads" ) ? "active" : "" )%>
+                    </li>
+                    <% end %>
+                    <% if is_admin? || is_sales_manager? %>
+                    <li>
+                      <%= link_to t("sales_leads" , :default => "Assigned Leads"), assigned_leads_path , :class => ( ( controller_name == "sales_leads" ) ? "active" : "" )%>
+                    </li>
+                    <li>
+                      <%= link_to t("sales_leads" , :default => "Unassigned Leads"), unassigned_leads_path , :class => ( ( controller_name == "sales_leads" ) ? "active" : "" )%>
+                    </li>
+                    <% end %>
+                    <% if is_admin? || is_sales_manager? || is_sales_engineer? %>
+                    <li>
+                      <%= link_to t("my_leads" , :default => "My Leads"), my_leads_path , :class => ( ( controller_name == "users" and ( action_name == "my_leads" ) ) ? "active" : "" )%>
+                    </li> 
+                    <% end %>                   
+                  </ul>
+              </li>
 
-  	<!-- header -->
+              <li class="dropdown">
+                <% if is_admin? || is_sales_manager? || is_sales_engineer? -%>
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#"> Opportunities
+                  <b class="caret"></b>
+                </a>
+                <% end %>
+                  <ul class="dropdown-menu">
+                    <% if is_admin? || is_sales_manager? %>
+                    <li>
+                      <%= link_to t("sales_opportunities" , :default => "Create Opportunity"), new_sales_opportunity_path , :class => ( ( controller_name == "sales_opportunities" ) ? "active" : "" )%>
+                    </li>
+                    <% end %>
+                    <% if is_admin? || is_sales_manager? || is_sales_engineer? -%>
+                    <li>
+                      <%= link_to t("sales_opportunities" , :default => "All Opportunities"), sales_opportunities_path , :class => ( ( controller_name == "sales_opportunities" ) ? "active" : "" )%>
+                    </li>
+                    <% end %>
+                    <% if is_admin? || is_sales_manager? %>
+                    <li>
+                      <%= link_to t("sales_opportunities" , :default => "Assigned Opportunities"), assigned_opportunities_path , :class => ( ( controller_name == "sales_opportunities" ) ? "active" : "" )%>
+                    </li>
+                    <li>
+                      <%= link_to t("sales_opportunities" , :default => "Unassigned Opportunities"), unassigned_opportunities_path , :class => ( ( controller_name == "sales_opportunities" ) ? "active" : "" )%>
+                    </li>
+                    <% end %>
+                    <% if is_admin? || is_sales_manager? || is_sales_engineer? -%>
+                    <li>
+                      <%= link_to t("my_opportunities" , :default => "My Opportunities"), my_opportunities_path , :class => ( ( controller_name == "users" and ( action_name == "my_opportunities" ) ) ? "active" : "" )%>
+                    </li> 
+                    <% end %>                   
+                  </ul>
+              </li>
+              <li class="dropdown">
+                <% if is_admin? || is_employee? || is_contact? %>
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#"> Support
+                  <b class="caret"></b>
+                </a>
+                <% end %>
+                  <ul class="dropdown-menu">
+                    <% if is_admin? || is_employee? || is_contact? %>
+                    <li>
+                      <%= link_to t("service_cases" , :default => "Create Service Case"), new_service_case_path , :class => ( ( controller_name == "service_cases" ) ? "active" : "" )%>
+                    </li>
+                    <li>
+                      <%= link_to t("service_cases" , :default => "All Service Cases"), service_cases_path , :class => ( ( controller_name == "service_cases" ) ? "active" : "" )%>
+                    </li>
+                    <% end %>
+                    <% if is_admin? || is_service_manager? %>
+                    <li>
+                      <%= link_to t("service_cases" , :default => "Assigned Service Cases"), assigned_cases_path , :class => ( ( controller_name == "service_cases" ) ? "active" : "" )%>
+                    </li>
+                    <li>
+                      <%= link_to t("service_cases" , :default => "Unassigned Service Cases"), unassigned_cases_path , :class => ( ( controller_name == "service_cases" ) ? "active" : "" )%>
+                    </li>
+                    <% end %>
+                    <% if is_admin? || is_employee? || is_contact? %>
+                    <li>
+                      <%= link_to t("my_cases" , :default => "My Cases"), my_cases_path , :class => ( ( controller_name == "users" and ( action_name == "my_cases" ) ) ? "active" : "" )%>
+                    </li>  
+                    <% end %>                  
+                  </ul>
+              </li>
+            <% if current_user and is_twitter_enabled? -%>
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="/social"> Social
+                  <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                  <li>  
+                    <%= link_to t("social" , :default => "Social"), social_path , :class => ( ( controller_name == "social_media" and ( action_name == "social" ) ) ? "active" : "" ) %>
+                  
+                  </li>
+                </ul>
+              </li>
+            <% end -%>
+
+            <% if is_admin? %>
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#"> Accounts
+                  <b class="caret"></b>
+                </a>
+                  <ul class="dropdown-menu">
+                  <li>
+                    <%= link_to t("accounts" , :default => "Create Account"), new_customer_account_path , :class => ( ( controller_name == "accounts" ) ? "active" : "" )%>
+                  </li>
+                    <li>
+                      <%= link_to t("accounts" , :default => "All Accounts"), customer_accounts_path , :class => ( ( controller_name == "accounts" )  ? "active" : "" )%>
+                    </li>
+                  </ul>
+              </li>
+            <% end %>  
+
+            <% if is_admin? -%> 
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#"> Users
+                  <b class="caret"></b>
+                </a>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <%= link_to t("employees" , :default => " All Employees"), employees_path , :class => ( ( controller_name == "users" and ( action_name == "employees" ) ) ? "active" : "" ) %>
+                    </li>
+                    <li>
+                      <%= link_to t("customers" , :default => "All Customers"), customers_path, :class => ( ( controller_name == "users" and ( action_name == "customers" ) ) ? "active" : "" ) %>    
+                    </li>
+                    <li>
+                      <%= link_to t("general_users" , :default => "All Prospects"), non_employees_path, :class => ( ( controller_name == "users" and ( action_name == "non_employees" ) ) ? "active" : "" ) %>    
+                    </li>
+                  </ul>
+              </li> 
+            <% end -%> 
+            
+          </ul>
+          <ul class="navbar-header navbar-right">
+            <% if current_user %>
+              <%= link_to t("users" , :default => "Profile"), find_users_path , :class => ( ( controller_name == "users" )  ? "active" : "" ) %>:&nbsp;
+              <%= link_to (current_user.name || "User") , edit_user_registration_path(current_user) %>! | <%= link_to t("sign_out" ,:default => "Sign Out"),  "/logout" , { :title => "Log out" }  %>
+            <% else %>
+              <%= t("sign_in" , :default => "Sign in using") %>:&nbsp;
+                <% if is_twitter_enabled? -%>
+                  <a href="<%= user_omniauth_authorize_path(:twitter) %>">
+                    <%= image_tag "tw.png" %> 
+                  </a>
+                <% end -%>                  
+                <%= link_to t("employee_login", :default => "Employee Login") , login_path %>
+            <% end %>
+          </ul>
+        </div><!-- /navbar-collapse collapse-->
+      </div><!-- /container -->
+    </nav>
 
 
+    <!-- container -->
 
-	  <!-- container -->
-	    <div class="container">
-       <!-- search -->
+    <div class="container">
+      <!-- search -->
       <div class="row">
-        <div class="span8">
+        <div class="col-md-8">
           <ul class="breadcrumb">
+            <li><a href="/">Home</a></li>
             <%= yield :breadcrumb %>
           </ul>
-        </div>     <div class="span4" id="search">
+        </div>     
+        <div class="col-md-4" id="search">
           <form id="s_sapps" class="navbar-search pull-right"  method="get" action="/welcome/quick_find">
             <fieldset>
               <input type="text" id="r" name="r" value="" size="20" onfocus="document.forms['s_sapps'].r.value='';" onblur="if (document.forms['s_sapps'].r.value == '') document.forms['s_sapps'].r.value='Quick Search';" class="required" />
@@ -73,187 +251,36 @@
             </fieldset>
           </form>
         </div> 
-        <%= yield :sidebar %>
+          <%= yield :sidebar %>
       </div>
 
-      <!-- Navigation menu -->
-      <div class="row">
-        <div class="span12">
-          <ul class="nav nav-pills">
-
-            <li class="dropdown">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#" style= "color:white; background: #33CCFF"> Home
-                <b class="caret"></b>
-              </a>
-                <ul class="dropdown-menu">
-                  <li><a href="/" title="Home" class=<%= ( controller_name == "welcome" ) ? "active" : "" %> >
-                      <%= t("home" , :default => "Home") %>
-                  </a>
-                  </li>
-                </ul>
-            </li>
-            
-            <% if current_user and is_twitter_enabled? -%>
-
-              <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="/social" style= "color:white; background: #33CCFF"> Social
-                  <b class="caret"></b>
-                </a>
-                  <ul class="dropdown-menu">
-                    <li>  
-                      <%= link_to t("social" , :default => "Social"), social_path , :class => ( ( controller_name == "users" and ( action_name == "social" ) ) ? "active" : "" ) %>
-                    
-                    </li>
-                  </ul>
-              </li>
-
-            <% end -%>
-
-            <% if is_admin? -%> 
-              <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#" style= "color:white; background: #33CCFF"> Users
-                  <b class="caret"></b>
-                </a>
-                <ul class="dropdown-menu">
-                  <li>
-                    <%= link_to t("employees" , :default => "Employees"), employees_path , :class => ( ( controller_name == "users" and ( action_name == "employees" ) ) ? "active" : "" ) %>
-                  </li>
-                  <li>
-                    <%= link_to t("customers" , :default => "Customers"), customers_path, :class => ( ( controller_name == "users" and ( action_name == "customers" ) ) ? "active" : "" ) %>    
-                  </li>
-                  <li>
-                    <%= link_to t("general_users" , :default => "Prospects"), non_employees_path, :class => ( ( controller_name == "users" and ( action_name == "non_employees" ) ) ? "active" : "" ) %>    
-                  </li>
-
-                </ul>
-              </li> 
-             <% end -%> 
-             
-             <% if is_admin? || is_support_manager? || is_support_agent? || is_social_media_manager? || is_community_manager? %>
-              <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#" style= "color:white; background: #33CCFF"> Communities
-                  <b class="caret"></b>
-                </a>
-                  <ul class="dropdown-menu">
-                  <% if is_admin? %>  
-                      <li>
-                        <%= link_to t("forum_categories" , :default => " Categories"), forum_categories_path , :class => ( ( controller_name == "forum_categories" ) ? "active" : "" ) %>
-                      </li>
-                  <% end -%>                     
-                    
-                      <li>
-                        <%= link_to t("forums" , :default => "Forums"), forums_path , :class => ( ( controller_name == "forums" )  ? "active" : "" ) %>
-                      </li>
-                                      
-                  </ul>
-             </li>
-
-            <% end %>
-            <% if is_admin? || is_support_manager? %>
-              <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#" style= "color:white; background: #33CCFF"> Accounts
-                  <b class="caret"></b>
-                </a>
-                  <ul class="dropdown-menu">
-                    <li>
-                      <%= link_to t("accounts" , :default => "Accounts"), customer_accounts_path , :class => ( ( controller_name == "accounts" )  ? "active" : "" )%>
-                    </li>
-                 </ul>
-              </li>
-            <% end %>  
-              
-              <% if current_user -%>
-                <li class="dropdown">
-                  <a class="dropdown-toggle" data-toggle="dropdown" href="#" style= "color:white; background: #33CCFF"> Support
-                    <b class="caret"></b>
-                  </a>
-                  <ul class="dropdown-menu">
-                    <li>
-                      <%= link_to t("service_cases" , :default => "Create Service Case"), new_service_case_path , :class => ( ( controller_name == "service_cases" ) ? "active" : "" )%>
-                    </li>
-                    <li>
-                      <%= link_to t("service_cases" , :default => "All Service Cases"), service_cases_path , :class => ( ( controller_name == "service_cases" ) ? "active" : "" )%>
-                    </li>
-                    <li>
-                      <%= link_to t("service_cases" , :default => "Assigned Service Cases"), assigned_cases_path , :class => ( ( controller_name == "service_cases" ) ? "active" : "" )%>
-                    </li>
-                    <li>
-                      <%= link_to t("service_cases" , :default => "Unassigned Service Cases"), unassigned_cases_path , :class => ( ( controller_name == "service_cases" ) ? "active" : "" )%>
-                    </li>
-                    <li>
-                      <%= link_to t("my_cases" , :default => "My Cases"), my_cases_path , :class => ( ( controller_name == "users" and ( action_name == "my_cases" ) ) ? "active" : "" )%>
-                    </li>                    
-                  </ul>
-                </li>
-                <li class="dropdown">
-                  <a class="dropdown-toggle" data-toggle="dropdown" href="#" style= "color:white; background: #33CCFF"> Content Marketing
-                  <b class="caret"></b>
-                  </a>
-                  <ul class="dropdown-menu">
-                  <% if is_admin? %>  
-                      <li>
-                        <%= link_to t("cm_page_categories" , :default => "Categories"), cm_page_categories_path , :class => ( ( controller_name == "cm_page_categories" ) ? "active" : "" ) %>
-                      </li>
-                  <% end %>  
-                    <li>
-                      <%= link_to t("cm_pages" , :default => "Pages"), cm_pages_path , :class => ( ( controller_name == "cm_pages" )  ? "active" : "" )%>
-                    </li>
-                  </ul>
-                </li>                             
-
-              <% end -%>   
-            
-         </ul>
-        </div>
-      </div> 
-      <!-- Navigation menu -->
-
-            
-            
-            
       <div id="wrapper" class="wat-cf">
         <div class="flash">
           <% flash.each do |name, msg| %>
             <% if msg.is_a?(String) %>
-            <%= content_tag :div, msg, :id => "flash_#{name}" %>
-          <% end %>
+              <%= content_tag :div, msg, :id => "flash_#{name}" %>
+            <% end %>
           <% end %>
         </div>
       </div>             
 
-
       <div id="main">
         <%= yield %>
       </div>
-
-	    <!-- main -->
-
-
-      <footer>
-        <div class="row">
-          <div class="span12">
+      <hr>
+      <footer class="text-center">
             <a href="#">Contact US</a>
             <a href="#">|</a>
             <a href="#">Terms of services</a>
             <a href="#">|</a>
             <a href="#">Privacy Policy</a>
-          </div>
-        </div>  
       </footer>
-      
-      
- 
-    </div>
-	  <!-- container -->
+    </div>     <!-- container -->
 
-
-    
-	<!-- Included JS Files -->
-	  
-
-    <script type="text/javascript">
-      $(document).ready(function(){});
-    </script>
+    <!-- Included JS Files -->
+      <script type="text/javascript">
+        $(document).ready(function(){});
+      </script>
 
   </body>
 </html>

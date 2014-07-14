@@ -1,0 +1,84 @@
+<% content_for :head do -%>
+    <%= javascript_include_tag "jquery-1.6.4.min.js" , "validate"%>
+    <%= javascript_include_tag "bootstrap-datepicker.js" %>
+    <%= stylesheet_link_tag 'datepicker' %>
+ <% end -%>
+<%= form_for(@sales_opportunity) do |f| %>
+  <% if @sales_opportunity.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@sales_opportunity.errors.count, "error") %> prohibited this forum from being saved:</h2>
+
+      <ul>
+      <% @sales_opportunity.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :Customer_Account_Name %><br>
+    <%= f.collection_select :customer_account_id, CustomerAccount.all, :id, :name %>
+  </div>  
+  
+  <div class="field">
+    <%= f.label :name  %><br> 
+    <%= f.text_field :name, :required => true %>
+  </div>
+  
+  <div class="field">
+    <%= f.label :source %><br> 
+    <%= f.text_field :source %>
+  </div> 
+  <div class="field">
+    <%= f.label :description %><br>
+    <%= f.text_field :description %>
+  </div>  
+  
+  <div class="field">
+    <%= f.label :type %><br>
+    <%= f.text_field :type %>
+  </div>  
+        
+  <div class="field">
+    <%= f.label :status %><br>
+    <%= f.select :status, SERVICECASE_STATUSES, :include_blank => false %>
+  </div>  
+
+  <div class="field">
+    <%= f.label :stage %><br>
+    <%= f.text_field :stage %>
+  </div> 
+  <div class="field">
+    <%= f.label :closes_on %><br>
+    <%= f.text_field :closes_on, :class => 'datepicker'%>
+  </div> 
+</div>     
+  <div class="field">
+    <%= f.label :probability %><br>
+    <%= f.text_field :probability %>
+  </div> 
+    
+  <div class="field">
+    <%= f.label :amount %><br>
+    <%= f.text_field :amount %>
+  </div>
+  
+  <div class="field">
+    <%= f.label :discount %><br>
+    <%= f.text_field :discount %>
+  </div>   
+
+  <div class="field">
+    <%= f.label :currency %><br>
+    <%= f.text_field :currency %>
+  </div>   
+
+  <div class="actions">    
+    <%= f.button :submit %>
+  </div>  
+  
+<% end %>
+<script type="text/javascript">
+ $('.datepicker').datepicker({format: "yyyy-mm-dd"});
+</script>

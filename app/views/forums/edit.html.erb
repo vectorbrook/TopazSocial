@@ -1,8 +1,9 @@
 <% content_for :breadcrumb do %>
-  <li><%= link_to "Forums", forums_path %> <span class="divider">/</span></li>
-  <li class="active">Edit forums </li>
+  <li><%= link_to "Forums", forums_path %>
+  <li class="active">Edit forum </li>
 <% end %>
-<h1>Editing Forum: <%= @forum.name %></h1>
-
+<h2>Editing Forum: <%= @forum.name %></h2>
 <%= render 'form' %>
 
+<%= link_to 'Show', @forum %> |
+<%= link_to 'Back', forums_path %>

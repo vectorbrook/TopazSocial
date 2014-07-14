@@ -1,8 +1,62 @@
-<%= simple_form_for(@customer_account) do |f| %>
-  <%= f.error_notification %>
-    <%= f.input :name  %>
-    <%= f.input :description, :as => :text, :input_html => {:size => "60x8"}  %>
-    <%= f.button :submit %>
+<%= form_for(@customer_account, :url => { :controller => controller_name, :action => 'create'}, :html => { :id => "new_customer_account"}) do |f| %>
+  <% if @customer_account.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@customer_account.errors.count, "error") %> prohibited this customer_account from being saved:</h2>
+
+      <ul>
+      <% @customer_account.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :name %><br>
+    <%= f.text_field :name %>
+  </div>
+  <div class="field">
+    <%= f.label :description %><br>
+    <%= f.text_field :description %>
+  </div>
+  <div class="field">
+    <%= f.label :ac_type %><br>
+    <%= f.text_field :ac_type %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
 <% end %>
+<script type="text/javascript">
+  $(document).ready(function() {
+    //alert("hi  a" );
 
-
+    $('#new_customer_account').validate({
+      rules: {
+        'customer_account[name]': {
+          minlength: 3,
+          maxlength: 15,
+          required: true
+        },
+        'customer_account[description]': {
+          required: true
+        },
+      },
+    highlight: function(element) {
+        $(element).closest('.form-group').addClass('has-error');
+    },
+    unhighlight: function(element) {
+        $(element).closest('.form-group').removeClass('has-error');
+    },
+    errorElement: 'span',
+    errorClass: 'help-block',
+    errorPlacement: function(error, element) {
+        if(element.parent('.input-group').length) {
+            error.insertAfter(element.parent());
+        } else {
+            error.insertAfter(element);
+        }
+    }
+    });
+  });
+</script>

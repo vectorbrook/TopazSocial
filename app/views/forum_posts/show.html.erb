@@ -1,0 +1,35 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Forums", forums_path %> 
+  <li><%= link_to "Forum Topics", forum_forum_topics_path(@forum) %> 
+  <li><%= link_to "Forum Post", forum_forum_topic_forum_posts_path(@forum, @forum_topic) %> 
+  <li class="active"> <%= @forum_post.body %></li>
+<% end %>
+
+<p>
+  <strong>Body:</strong>
+  <%= @forum_post.body %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @forum_post.description %>
+</p>
+
+<p>
+  <strong>User:</strong>
+  <%= @forum_post.user_id %>
+</p>
+
+<p>
+  <strong>Status:</strong>
+  <%= @forum_post.status %>
+</p>
+
+<p>
+  <strong>Sentiment:</strong>
+  <%= @forum_post.sentiment %>
+</p>
+
+<%= link_to 'Edit', edit_forum_forum_topic_forum_post_path(@forum,@forum_topic,@forum_post) %> |
+<%= link_to 'Back', forum_forum_topic_forum_posts_path(@forum, @forum_topic) %> |
+

@@ -1,42 +1,48 @@
 <% content_for :breadcrumb do %>
-  <li><%= link_to "Customer Accounts", customer_accounts_path %> <span class="divider">/</span></li>
-   <li><%= link_to "Customer Site", customer_account_customer_sites_path(@customer_account) %> <span class="divider">/</span></li>
+  <li><%= link_to "Customer Accounts", customer_accounts_path %> 
+   <li><%= link_to "Customer Sites", customer_account_customer_sites_path(@customer_account) %>
   <li class="active"><%= @customer_site.name %></li>
 <% end %>
-<p id="notice"><%= notice %></p>
-<table class="table table-bordered table-hover" >
-  <tr>
-    <th>Customer Site Name</th>
-    <th>Customer Site Full Address</th>
-  </tr>
-  <tr> 
-    <td><%= @customer_site.name %></td>
-    <td><%= @customer_site.full_address %></td>
-  </tr>
-</table>
 
-<table class="table table-bordered table-hover" >
-  <tr>
-    <th>Customer contact</th>
-  </tr>
-  <tr>
-     <td>
-      <% if @customer_site.customer_contacts.size > 0 -%>
-    
-        <% @customer_site.customer_contacts.each do |c| -%>
-      
-          <%= link_to c.full_name , edit_customer_account_customer_site_customer_contact_path(@customer_account,@customer_site,c) %>
-     
-          <%= c.full_details %>
-     
-        <% end -%>
-    
-      <% end -%>
-  </tr>
-</table>
+<p>
+  <strong>Name:</strong>
+  <%= @customer_site.name %>
+</p>
 
-<%= link_to "Add a Contact" , new_customer_account_customer_site_customer_contact_path(@customer_account,@customer_site) %> |
-<%= link_to 'Edit', edit_customer_account_customer_site_path(@customer_account,@customer_site) %> |
-<%= link_to 'Back', :back %><p id="notice"><%= notice %></p>
+<p>
+  <strong>Description:</strong>
+  <%= @customer_site.description %>
+</p>
 
+<p>
+  <strong>Address line1:</strong>
+  <%= @customer_site.address_line1 %>
+</p>
 
+<p>
+  <strong>Address line2:</strong>
+  <%= @customer_site.address_line2 %>
+</p>
+
+<p>
+  <strong>City:</strong>
+  <%= @customer_site.city %>
+</p>
+
+<p>
+  <strong>State:</strong>
+  <%= @customer_site.state %>
+</p>
+
+<p>
+  <strong>Country:</strong>
+  <%= @customer_site.country %>
+</p>
+
+<p>
+  <strong>Zipcode:</strong>
+  <%= @customer_site.zipcode %>
+</p>
+
+<%= link_to 'Edit', edit_customer_account_customer_site_path(@customer_account, @customer_site) %> |
+<%= link_to 'Back', customer_account_customer_sites_path %>

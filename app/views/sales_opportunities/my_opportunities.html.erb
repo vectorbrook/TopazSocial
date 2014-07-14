@@ -1,0 +1,32 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Sales Opportunity", sales_opportunities_path %> 
+  <li class="active">My Sales Opportunities</li>
+<% end %>
+
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <strong>My Sales Opportunities</strong>
+  </div>  
+      <table class="table table-hover" >
+        <thead>
+          <tr>
+            <th>Sales Opportunity Name</th>
+            <th>Customer Account Name</th>
+            <th>Source</th>
+            <th>Status</th>
+            <th>description</th>
+          </tr>
+        </thead>  
+        <tbody>
+           <% for sales_opportunity in @sales_opportunities %>
+            <tr>
+              <td><%= link_to sales_opportunity.name , sales_opportunity_path(sales_opportunity) %></td>
+              <td><%= sales_opportunity.customer_account.name %></td>
+              <td><%= sales_opportunity.source %></td>
+              <td><%= sales_opportunity.status %></td>
+              <td><%= sales_opportunity.description %></td>  
+            </tr>
+          <% end %>
+        </tbody>  
+      </table>
+</div>

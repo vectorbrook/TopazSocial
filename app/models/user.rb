@@ -4,19 +4,19 @@ class User
   # :token_authenticatable, :confirmable,
   # :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :trackable, :validatable, :token_authenticatable, :confirmable, :timeoutable, :lockable, :omniauthable
-
+         :recoverable, :rememberable, :trackable, :validatable, #:token_authenticatable,
+         :confirmable, :lockable, :timeoutable, :omniauthable
   ## Database authenticatable
   field :name
-  validates_presence_of :name
-  validates_uniqueness_of :name, :email, :case_sensitive => false
-  attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :provider, :uid
+  #validates_presence_of :name
+  #validates_uniqueness_of :name, :email, :case_sensitive => false
+  #attr_accessible :name, :email, :password, :password_confirmation, :remember_me, :provider, :uid
   field :provider, :type => String
   field :uid, :type => String
  
 
   
-  field :email,              :type => String, :default => ""
+  field :email, :type => String, :default => ""
   field :encrypted_password, :type => String, :default => ""
   
   ## Recoverable
@@ -76,7 +76,8 @@ class User
   PROVIDER_FIELDS = %w(uid profile_url token secret)
 
   field :name , :type => String
-  field :role , :type => Array , :default => ["user"]
+  field :role , :type => Array , :default => [EMPLOYEE_ROLES_DEFAULT]
+  field :category, :type => String, :default => DEFAULT_CATEGORY
   
 
   PROVIDERS.each do |provider|
@@ -90,7 +91,7 @@ class User
   field :is_private , :type => Boolean , :default => false
 
   attr_accessor  :old_password, :new_password , :new_password_confirmation, :role_arr
-  attr_accessible :password, :password_confirmation, :email, :name, :is_private, :role, :role_arr, *(PROVIDERS).map { |p| ["#{p}_uid".to_sym, "#{p}_profile_url".to_sym] }.flatten
+  #attr_accessible :password, :password_confirmation, :email, :name, :is_private, :role, :role_arr, *(PROVIDERS).map { |p| ["#{p}_uid".to_sym, "#{p}_profile_url".to_sym] }.flatten
 
   PROVIDERS.each do |p|
     PROVIDER_FIELDS.each do |f|
@@ -103,12 +104,15 @@ class User
   
   has_one :customer_contact
 
-
-  scope :employees , where(:role => "employee")
-  scope :non_employees , where(:role => (["user"]))
-  scope :prospects , where(:role => "prospect")
-  scope :customers , where(:role => "customer")
-  scope :active , where(:active => true)
+  field :followers, :type => Array, :default => []
+  field :followings, :type => Array, :default => []
+  field :blocked_users, :type => Array, :default => []
+  
+  scope :employees , ->{ where(:category => EMPLOYEE_CATEGORY) }
+  scope :non_employees , ->{ where(:role => (USER_CATEGORIES - [EMPLOYEE_CATEGORY])) }
+  scope :prospects , ->{ where(:category => PROSPECT_CATEGORY) }
+  scope :customers , ->{ where(:category => CUSTOMER_CATEGORY) }
+  scope :active , ->{ where(:active => true) }
 
   (ALL_ROLES - ["user"]).each do |role|
     class_eval <<-METHODS, __FILE__, __LINE__ + 1
@@ -120,7 +124,7 @@ class User
   
    def self.create_with_omniauth(auth)
     password = Util.generate_alphanumeric_string
-    User.create!(:name => auth["info"]["name"] , "#{auth['provider']}_uid".to_sym => auth["uid"] , "#{auth['provider']}_profile_url".to_sym => auth["info"]["urls"]["#{auth["provider"]}".camelize], "#{auth['provider']}_token".to_sym => auth["credentials"]["token"] ,"#{auth['provider']}_secret".to_sym => auth["credentials"]["secret"] ,:email => "u#{Util.generate_alphanumeric_string(3) + Time.now.to_i.to_s}@ts1.com" , :password => password , :password_confirmation => password , :confirmed_at => Time.now , :role => ["user"])
+    User.create!(:name => auth["info"]["name"] , "#{auth['provider']}_uid".to_sym => auth["uid"] , "#{auth['provider']}_profile_url".to_sym => auth["info"]["urls"]["#{auth["provider"]}".camelize], "#{auth['provider']}_token".to_sym => auth["credentials"]["token"] ,"#{auth['provider']}_secret".to_sym => auth["credentials"]["secret"] ,:email => "u#{Util.generate_alphanumeric_string(3) + Time.now.to_i.to_s}@ts1.com" , :password => password , :password_confirmation => password , :confirmed_at => Time.now , :category => PROSPECT_CATEGORY, :role => [PROSPECT_ROLES_DEFAULT])
   end
 
   def am_i_public?
@@ -138,6 +142,16 @@ class User
   def assigned_service_cases
     return [] unless self.is_employee?
     return ServiceCase.my_service_cases(self.id)
+  end
+
+  def assigned_sales_opportunities
+    return [] unless self.is_employee?
+    return SalesOpportunity.my_sales_opportunities(self.id)
+  end
+
+  def assigned_sales_leads
+    return [] unless self.is_employee?
+    return SalesLead.my_sales_leads(self.id)
   end
 
   def self.verify_id(id)
@@ -177,11 +191,18 @@ class User
   protected
 
   def employee_not_admin
-    @is_employee_not_admin ||= ( (self.role.include? "employee" or self.role.include? "customer" or self.role.include? "prospect")  and !self.role.include? "admin" )
+    @is_employee_not_admin ||= ( !(self.category == EMPLOYEE_CATEGORY && self.role.include?("admin")) )
   end
 
   def check_role
-    self.role.delete_if { |r| r.blank? }
+    check_category
+    self.role.delete_if { |r| r.blank? || !(Object::const_get("#{self.category.upcase}_ROLES").include? r)}
+  end
+  
+  def check_category
+    if self.category.blank?
+      self.category = DEFAULT_CATEGORY
+    end
   end
 
   def update_private_profiles

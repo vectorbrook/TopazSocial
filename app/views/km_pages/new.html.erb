@@ -1,0 +1,6 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "KM Pages", km_page_categories_path %> <span class="divider">/</span></li>
+  <li class="active">New Page</li>
+<% end %>
+<%= render 'form' %>
+

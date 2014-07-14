@@ -1,0 +1,75 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Service Cases", service_cases_path  %> 
+  
+  <li class="active"><%= @service_case.name %></li>
+<% end %>
+<% content_for :head do %>
+  <%= javascript_include_tag "ang1_app" %>
+<% end %>
+<p id="notice"><%= notice %></p>
+<h1><%= @service_case.name %></h1>
+  
+<h2>Service Cases</h2>
+
+<div data-ng-app="msample12">
+
+  <div data-ng-controller="ServicController">
+    <ul>
+      <li data-ng-repeat="servic in servics">
+        <div><label>Name: {{servic.name}}</label></div>
+        <div><label>Description: {{servic.description}}</label></div>
+        <div><label>Type: {{servic.type}}</label></div>
+        <div><label>Priority: {{servic.priority}}</label></div>
+        <div><label>Impact: {{servic.impact}}</label></div>
+        <div><label>Status: {{servic.status}}</label></div>
+        <div><label>Solution: {{servic.solution}}</label></div>
+        <button data-ng-click="destroy($index)" >Delete</button>
+        <button data-ng-click="edit(servic,$index)" >Edit</button>
+      </li>
+    </ul>
+    <div data-ng-show="showNew">
+    <ul>
+      <li><div><label>Name:</label></div><div><input type="text" data-ng-model="servicModel.name" /></div></li>
+      <li><div><label>Description:</label></div><div><input type="text" data-ng-model="servicModel.description" /></div></li>
+      <li><div><label>Type:</label></div><div><input type="text" data-ng-model="servicModel.type" /></div></li>
+      <li><div><label>Priority:</label></div><div><input type="text" data-ng-model="servicModel.priority" /></div></li>
+      <li><div><label>Impact:</label></div><div><input type="text" data-ng-model="servicModel.impact" /></div></li>
+      <li><div><label>Status:</label></div><div><input type="text" data-ng-model="servicModel.status" /></div></li>
+      <li><div><label>Solution:</label></div><div><input type="text" data-ng-model="servicModel.solution" /></div></li>
+      <button data-ng-click="addServic()">New Service Case</button>
+    </ul>
+    </div>
+
+    <div data-ng-show="showUpdate">
+    <ul>
+      <input type="hidden" data-ng-model="uservicModel._id" />
+      <li><div><label>Name:</label></div><div><input type="text" data-ng-model="uservicModel.name" /></div></li>
+      <li><div><label>Description:</label></div><div><input type="text" data-ng-model="uservicModel.description" /></div></li>
+      <li><div><label>Type:</label></div><div><input type="text" data-ng-model="uservicModel.type" /></div></li>
+      <li><div><label>Priority:</label></div><div><input type="text" data-ng-model="uservicModel.priority" /></div></li>
+      <li><div><label>Impact:</label></div><div><input type="text" data-ng-model="uservicModel.impact" /> </div></li>
+      <li><div><label>Status:</label></div><div><input type="text" data-ng-model="uservicModel.status" /></div></li> 
+      <li><div><label>Solution:</label></div><div><input type="text" data-ng-model="uservicModel.solution" /></div></li>
+      <button data-ng-click="update()" >Update Service Case</button>
+    </ul>
+    </div>
+    
+    <ul>
+      <li data-ng-repeat="log in logs">
+        <div><label>Text: {{log.name}}</label></div>
+      </li>
+    </ul>
+    <div data-ng-show="showNew1">
+      <ul>
+        <input type="hidden" data-ng-model="service_case_id" value="<%= @service_case.id %>" />
+        <li><div><label>Text:</label></div><div><input type="text" data-ng-model="logModel.log_text" /></div></li>
+        <button data-ng-click="addlog()">Add Log</button>
+      </ul>
+    </div>
+    
+  </div>
+</div>
+
+<%= link_to "Assign" , assign_case_path(@service_case)%>
+<%= link_to 'Edit', edit_service_case_path(@service_case) %> |
+<%= link_to 'Back', :back %>

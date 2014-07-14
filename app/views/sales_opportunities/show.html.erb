@@ -1,0 +1,99 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Sales Opportunity", sales_opportunities_path %> 
+  
+  <li class="active"><%= @sales_opportunity.name %></li>
+<% end %>
+<h1><%= @sales_opportunity.name %></h1>
+<table class="table table-bordered table-hover" >
+  <tr>
+    <th>Name</th>
+    <th>Customer Account Name</th>
+    <th>Status</th>
+    <th>Description</th>
+    
+  </tr>
+  <tr>
+    <td><%= @sales_opportunity.name %></td>
+    <% if @sales_opportunity.customer_account %>
+    <td><%= @sales_opportunity.customer_account.name %></td>
+    <% else %>
+      <td>
+      </td>
+    <% end %> 
+    <td><%= @sales_opportunity.status %></td>
+    <td><%= @sales_opportunity.description %></td>
+ </tr>
+</table> 
+  
+    
+    <% if @sales_opportunity.sales_opportunity_logs.size > 0 -%>
+      <h3>Log History</h3>
+      <table class="table table-bordered table-hover" >
+        <tr>
+          <th>Log Text</th>
+          <th>Created at</th>
+        </tr>
+          <% @sales_opportunity.sales_opportunity_logs.each do |t| -%>
+            <tr>
+              <td><%= t.log_text %></td>
+              <td><%= t.created_at %></td>
+            </tr>
+        <% end -%>
+      </table>
+    <% end -%>
+   
+    <% if @sales_opportunity.sales_opportunity_interactions.size > 0 -%>
+      <h3>Customer Interaction</h3>
+      <table class="table table-bordered table-hover" >
+        <tr>
+          <th>Interaction Text</th>
+          <th>Created at</th>
+        </tr>
+        <% @sales_opportunity.sales_opportunity_interactions.each do |t| -%>
+          <tr>
+            <td><%= t.interaction_text %></td>
+            <td><%= t.created_at %></td>
+          </tr>
+        <% end -%>
+      </table>
+    <% end -%>
+   
+    <p>
+      <h4>Add new Customer Interaction:</h4>
+      <%= form_tag('/add_opportunity_interaction') do |f| %>
+        <div class="field">
+          <%= hidden_field_tag :sales_opportunity_id, @sales_opportunity.id  %>
+        </div>        
+        <div class="field">
+          <%= label_tag :interaction_text  %><br />
+          <%= text_area_tag :interaction_text %>
+        </div>
+        <div class="actions">
+          <%= submit_tag "Customer Interaction" %>
+        </div>
+      <% end -%>
+    </p>
+
+   
+    
+    <p>
+      <h4>Log Entry:</h4>
+      <%= form_tag('/add_opportunity_log') do |f| %>
+        <div class="field">
+          <%= hidden_field_tag :sales_opportunity_id, @sales_opportunity.id  %>
+        </div>        
+        <div class="field">
+          <%= label_tag :Text  %><br />
+          <%= text_area_tag :text %>
+        </div>
+        <div class="actions">
+          <%= submit_tag "Add Log Entry" %>
+        </div>
+      <% end -%>
+    </p>
+    
+  </p>
+
+<%= link_to "Assign" , assign_opportunity_path(@sales_opportunity)%>
+<%= link_to 'Edit', edit_sales_opportunity_path(@sales_opportunity) %> |
+<%= link_to 'Back', :back %>

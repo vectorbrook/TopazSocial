@@ -1,0 +1,73 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Service Cases", service_cases_path  %> 
+  
+  <li class="active"><%= @service_case.name %></li>
+<% end %>
+<% content_for :head do %>
+  <%= javascript_include_tag "ang1_app" %>
+<% end %>
+<p id="notice"><%= notice %></p>
+<h1><%= @service_case.name %></h1>
+  
+<h2>Service Cases</h2>
+
+<div data-ng-app="msample12">
+
+  <div data-ng-controller="ServicController">
+    <ul>
+      <li data-ng-repeat="servic in servics">
+        <div><label>Name: {{servic.name}}</label></div>
+        <div><label>Description: {{servic.description}}</label></div>
+        <div><label>Type: {{servic.type}}</label></div>
+        <div><label>Priority: {{servic.priority}}</label></div>
+        <div><label>Impact: {{servic.impact}}</label></div>
+        <div><label>Status: {{servic.status}}</label></div>
+        <div><label>Solution: {{servic.solution}}</label></div>
+        <button data-ng-click="destroy($index)" >Delete</button>
+        <button data-ng-click="edit(servic,$index)" >Edit</button>
+      </li>
+    </ul>
+    <div data-ng-show="showNew">
+      <input type="text" data-ng-model="servicModel.name" />
+      <input type="text" data-ng-model="servicModel.description" />
+      <input type="text" data-ng-model="servicModel.type" />
+      <select data-ng-model="servicModel.priority" ng-options="priority">
+       <option value="1" selected="selected">1</option>
+       <option value="2">2</option>
+       <option value="3">3</option></select>
+      <input type="text" data-ng-model="servicModel.impact" /> 
+      <select data-ng-model="servicModel.status" ng-options="status">
+       <option value="New" selected="selected">New</option>
+       <option value="Open">Open</option>
+       <option value="Closed">Closed</option>
+       <option value="Closed">Pending</option>
+       <option value="Information Requested">Information Requested</option></select> 
+      <input type="text" data-ng-model="servicModel.solution" />
+      <button data-ng-click="addServic()">New Service Case</button>
+    </div>
+
+    <div data-ng-show="showUpdate">
+      <input type="hidden" data-ng-model="uservicModel._id" />
+      <input type="text" data-ng-model="uservicModel.name" />
+      <input type="text" data-ng-model="uservicModel.description" />
+      <input type="text" data-ng-model="uservicModel.type" />
+      <select data-ng-model="uservicModel.priority" ng-options="priority">
+       <option value="1">1</option>
+       <option value="2">2</option>
+       <option value="3">3</option></select>
+      <input type="text" data-ng-model="uservicModel.impact" /> 
+      <select data-ng-model="uservicModel.status" ng-options="status">
+       <option value="New">New</option>
+       <option value="Open">Open</option>
+       <option value="Closed">Closed</option>
+       <option value="Closed">Pending</option>
+       <option value="Information Requested">Information Requested</option></select> 
+      <input type="text" data-ng-model="uservicModel.solution" />
+      <button data-ng-click="update()" >Update Service Case</button>
+    </div>
+
+  </div>
+</div>
+<%= link_to "Assign" , assign_case_path(@service_case)%>
+<%= link_to 'Edit', edit_service_case_path(@service_case) %> |
+<%= link_to 'Back', :back %>

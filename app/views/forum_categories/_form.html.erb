@@ -1,9 +1,0 @@
-
-<% p @category -%>
-<%= simple_form_for(@category) do |f| %>
-  <%= f.error_notification %>
-    <%= f.input :name %>
-    <%= f.input :description, :as => :text, :input_html => {:size => "60x8"}%>
-    <%= f.button :submit %>
-<% end %>
-

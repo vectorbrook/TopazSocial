@@ -1,0 +1,60 @@
+<% content_for :breadcrumb do %>
+ <li class="active">Forums </li>
+<% end %>
+
+<p>
+  <h3>Forums</h3>
+</p>
+<% if current_user %> 
+  <button class="btn btn-default">
+    <%= link_to 'New Forum', new_forum_path %>
+  </button>
+<% else %>
+  <button class="btn btn-default">
+    <%= link_to 'New Forum', login_path %>
+  </button>
+<% end %>
+
+<br />
+<br />
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr class="success">
+        <th>Forum</th>
+        <th>Topics</th>
+        <th>Views</th>
+       <% if current_user %>
+        <th></th>
+        <th></th>
+       <% end %> 
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @forums.each do |forum| %>
+        <tr>
+          <td><%= link_to forum.name, forum_forum_topics_path(forum) %>
+          <table>
+            <td><%="#{"Last Post:"} #{time_ago_in_words(forum.last_post_created_at.to_s) unless forum.last_post_created_at.blank?} #{"ago by"} #{(forum.last_post_created_by.to_s) unless forum.last_post_created_by.blank?}" if forum.last_post_created_at %> </td>
+          </table>
+          
+          </td>
+          <td><%= forum.forum_topics.count %></td>
+          <td><%= forum.hits %></td>
+          
+        <% if current_user %>  
+          <td><%= link_to 'Edit', edit_forum_path(forum) %></td>
+          <td><%= link_to 'Destroy', forum, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+
+<br />
+<br />
+<%= paginate @forums %>
+
+<%= page_entries_info @forums %>
+

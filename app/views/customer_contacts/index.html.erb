@@ -1,0 +1,51 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Customer Accounts", customer_accounts_path %>
+  <li><%= link_to "Customer Sites", customer_account_customer_sites_path(@customer_account) %>
+  <li class="active">Customer Contacts</li>
+<% end %>
+
+<div class="well well-sm">  
+  <%= link_to 'New Customer contact', new_customer_account_customer_site_customer_contact_path(@customer_account, @customer_site) %> |
+  <%= link_to 'Back', customer_account_customer_sites_path(@customer_account, @customer_site) %>
+</div>
+
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <strong>Listing Customer Contacts</strong>
+  </div>  
+  <table class="table table hover">
+    <thead>
+      <tr>
+        <th>First name</th>
+        <th>Last name</th>
+        <th>Phone number1</th>
+        <th>Phone number2</th>
+        <th>Phone number3</th>
+        <th>Fax number</th>
+        <th>Email addr</th>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @customer_contacts.each do |customer_contact| %>
+        <tr>
+          <td><%= customer_contact.first_name %></td>
+          <td><%= customer_contact.last_name %></td>
+          <td><%= customer_contact.phone_number1 %></td>
+          <td><%= customer_contact.phone_number2 %></td>
+          <td><%= customer_contact.phone_number3 %></td>
+          <td><%= customer_contact.fax_number %></td>
+          <td><%= customer_contact.email_addr %></td>
+          <td><%= link_to 'Edit', edit_customer_account_customer_site_customer_contact_path(@customer_account, @customer_site, customer_contact) %></td>
+          <td><%= link_to 'Destroy', customer_account_customer_site_customer_contact_path(@customer_account, @customer_site, customer_contact), method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div> 
+
+<%= paginate @customer_contacts %>
+
+<%= page_entries_info @customer_contacts %>

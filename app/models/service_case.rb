@@ -11,18 +11,20 @@ class ServiceCase
   field :impact , :type => String
   field :status , :type => String
   field :solution , :type => String
-  field :created_by, :type => Moped::BSON::ObjectId
-  field :assigned_to, :type => Moped::BSON::ObjectId
-  field :customer_account_id, :type => Moped::BSON::ObjectId
-  field :customer_contact_id, :type => Moped::BSON::ObjectId
+  field :created_by, :type => BSON::ObjectId
+  field :assigned_to, :type => BSON::ObjectId
+  field :customer_account_id, :type => BSON::ObjectId
+  field :customer_contact_id, :type => BSON::ObjectId
   field :visible_to, :type => Array
   field :tags, :type => Array
 
+  belongs_to :forum_post
   belongs_to :customer_account
   embeds_many :service_case_logs
+  embeds_many :service_case_interactions
 
-  scope :assigned, where(:assigned_to.ne => nil)
-  scope :unassigned, where(:assigned_to => nil)
+  scope :assigned, ->{ where(:assigned_to.ne => nil) }
+  scope :unassigned, ->{ where(:assigned_to => nil) }
 
   cattr_reader :per_page
   @@per_page = 3
@@ -36,11 +38,7 @@ class ServiceCase
     return false unless Util.is_What(user_id,"String")
     return assign_to_(user_id)
   end
-
-  def interactions
-    Interaction.all(:context => "ServiceCase", :context_id => id)
-  end
-
+  
   def assigned?
     self.assigned_to != nil
   end

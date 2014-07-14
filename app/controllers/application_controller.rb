@@ -1,7 +1,9 @@
 class ApplicationController < ActionController::Base
-  protect_from_forgery
+  # Prevent CSRF attacks by raising an exception.
+  # For APIs, you may want to use :null_session instead.
+  protect_from_forgery with: :exception
   helper_method :current_user , :is_twitter_enabled? , *(ALL_ROLES - ["user"]).map { |m| [:"is_#{m}?"] }.flatten
-  rescue_from Exception, :with => :rescue_all_exceptions
+  #rescue_from Exception, :with => :rescue_all_exceptions
 
   TWITTER_ENABLED = false
 
@@ -12,7 +14,7 @@ class ApplicationController < ActionController::Base
   def require_user
     #return current_user ? true : false
     if !current_user
-      redirect_to root_url
+      redirect_to login_path
     end
   end
 
@@ -28,7 +30,16 @@ class ApplicationController < ActionController::Base
       end
     METHODS
   end
-
+  
+  def require_admin
+    if !(current_user and current_user.role.include?("admin"))
+      flash[:notice] = "You need to be an admin."
+   
+      redirect_to root_url
+    end
+  end
+  
+=begin
   def rescue_all_exceptions(exception)
     p exception.message
     p exception.backtrace
@@ -47,5 +58,5 @@ class ApplicationController < ActionController::Base
     end
     redirect_to root_url
   end
-
+=end
 end

@@ -1,94 +1,116 @@
-TopazSocial::Application.routes.draw do
+Ts1::Application.routes.draw do
+  get "welcome/welcome"
+  get "welcome/quick_find" => "welcome#quick_find"
+
+  get "/employees"  => "users#employees" , :as => :employees
+  get "/non_employees"  => "users#non_employees" , :as => :non_employees
+  get "/edit_employee/:id"  => "users#edit_employee" , :as => :edit_employee
+  put "/edit_employee/:id"  => "users#edit_employee"
   
-  resources :interactions
-  root :to => "welcome#welcome"
-  get "welcome/welcome" , :as => :welcome
-  match "welcome/quick_find" => "welcome#quick_find"
-  #devise_for :users
-  match "/employees"  => "users#employees" , :as => :employees
-  match "/non_employees"  => "users#non_employees" , :as => :non_employees
-  match "/edit_employee/:id"  => "users#edit_employee" , :as => :edit_employee
-  match "/customers"  => "users#customers" , :as => :customers
+  get "/customers"  => "users#customers" , :as => :customers
 
-  match 'enable_user/:id' => "users#enable_user", :as => :enable_user
-  match 'disable_user/:id' => "users#disable_user", :as => :disable_user
+  get 'enable_user/:id' => "users#enable_user", :as => :enable_user
+  get 'disable_user/:id' => "users#disable_user", :as => :disable_user
 
-  match 'clear/:provider/:id' => "users#clear_provider_details", :as => :clear
-
-
-  match "/social"  => "users#social" , :as => :social
-  match "/do_tweet"  => "users#do_tweet" , :as => :do_tweet
-
+  get 'clear/:provider/:id' => "users#clear_provider_details", :as => :clear
+  
+  
+  get "/social"  => "social_media#social" , :as => :social
+  get "/do_tweet"  => "social_media#do_tweet" , :as => :do_tweet
+  get "/find_users" => "users#find_users", :as => :find_users
+  get "follow/:id"  => "users#follow" , :as => :follow
+  get 'unfollow/:id' => 'users#unfollow', :as => :unfollow
+  get 'block_user/:id' => 'users#block_user', :as => :block_user
+  get 'show_profile/:id' => 'users#show_profile', :as => :show_profile 
+    
   as :user do
-      match '/user/confirmation' => 'users/confirmations#update', :via => :put, :as=> :update_user_confirmation
+      patch '/user/confirmation' => 'users/confirmations#update', :via => :patch, :as => :update_user_confirmation
   end
-  devise_for :users , :controllers => { :registrations => 'users/registrations', :confirmations => 'users/confirmations', :omniauth_callbacks => 'users/omniauth_callbacks' } do
-    get "/login" => "users/sessions#new"
-    get "/logout" => "users/sessions#destroy"
+  
+  devise_for :users,  :controllers => {:registrations => 'users/registrations', :confirmations => 'users/confirmations', :omniauth_callbacks => 'users/omniauth_callbacks' }
+  devise_scope :user do
+    get "/login", :to => "users/sessions#new"
+    get "/logout", :to => "users/sessions#destroy"
     get '/users/auth/:provider' => 'users/omniauth_callbacks#passthru'
   end
+
   resources :users
-
-  match "/enable_forum_category/:id" => "forum_categories#enable" , :as => :enable_forum_category
-  match "/disable_forum_category/:id" => "forum_categories#disable" , :as => :disable_forum_category
   
-  match "/enable_cm_page_category/:id" => "cm_page_categories#enable" , :as => :enable_cm_page_category
-  match "/disable_cm_page_category/:id" => "cm_page_categories#disable" , :as => :disable_cm_page_category
-
-  resources :forum_categories
-
   resources :forums do
-    resources :forum_topics
+    resources :forum_topics do
+         get '/addto_service/:id' => 'forum_posts#addto_service', :as => :forum_post_addto_service
+         post '/addto_service/:id' => 'forum_posts#addto_service'
+       resources :forum_posts
+
+    end
   end
-  
-  match '/new_forum_topic_interaction/:id' => "interactions#new_for_forum_topic", :as => :new_forum_topic_interaction
-
-  match "/add_forum/:fc_id" => "forums#new" , :as => :add_forum
-  match "/enable_forum/:id" => "forums#enable" , :as => :enable_forum
-  match "/disable_forum/:id" => "forums#disable" , :as => :disable_forum
-  match "/approve_forum/:id" => "forums#approve" , :as => :approve_forum
-  match "/reject_forum/:id" => "forums#reject" , :as => :reject_forum
-
+ 
 
   resources :customer_accounts do
     resources :customer_sites do
       resources :customer_contacts
     end
   end
+  resources :service_cases 
+  get '/unassigned_cases' => "service_cases#unassigned_cases", :as => :unassigned_cases
+  get '/assigned_cases' => "service_cases#assigned_cases", :as => :assigned_cases
 
-  match "/enable_account/:id" => "customer_accounts#enable" , :as => :enable_account
-  match "/disable_account/:id" => "customer_accounts#disable" , :as => :disable_account
+  get "/enable_service_case/:id" => "service_cases#enable" , :as => :enable_service_case
+  get "/disable_service_case/:id" => "service_cases#disable" , :as => :disable_service_case
+  get '/add_interaction' => "service_cases#add_interaction" , :as => :add_interaction
+  post '/add_interaction' => "service_cases#add_interaction"
+  get '/assign_case(/:id)' => "service_cases#assign_case" , :as => :assign_case
+  post '/assign_case(/:id)' => "service_cases#assign_case"
+  get '/add_log' => "service_cases#add_log" , :as => :add_log
+  post '/add_log' => "service_cases#add_log"
+  get "/my_cases"  => "service_cases#my_cases" , :as => :my_cases
 
-  resources :service_cases
-  match '/unassigned_cases' => "service_cases#unassigned_cases", :as => :unassigned_cases
-  match '/assigned_cases' => "service_cases#assigned_cases", :as => :assigned_cases
+  resources :sales_leads 
+  get '/unassigned_leads' => "sales_leads#unassigned_leads", :as => :unassigned_leads
+  get '/assigned_leads' => "sales_leads#assigned_leads", :as => :assigned_leads
 
-  match "/enable_service_case/:id" => "service_cases#enable" , :as => :enable_service_case
-  match "/disable_service_case/:id" => "service_cases#disable" , :as => :disable_service_case
-  match '/add_interaction' => "service_cases#add_interaction" , :as => :add_interaction
-  match '/assign_case(/:id)' => "service_cases#assign_case" , :as => :assign_case
-  match '/add_log' => "service_cases#add_log" , :as => :add_log
-  match "/my_cases"  => "service_cases#my_cases" , :as => :my_cases
+  get '/add_lead_interaction' => "sales_leads#add_lead_interaction" , :as => :add_lead_interaction
+  post '/add_lead_interaction' => "sales_leads#add_lead_interaction"
+  get '/assign_lead(/:id)' => "sales_leads#assign_lead" , :as => :assign_lead
+  post '/assign_lead(/:id)' => "sales_leads#assign_lead"
+  get '/add_lead_log' => "sales_leads#add_lead_log" , :as => :add_lead_log
+  post '/add_lead_log' => "sales_leads#add_lead_log"
+  get "/my_leads"  => "sales_leads#my_leads" , :as => :my_leads
   
-  resources :cm_page_categories
-  resources :cm_pages
+  
+  resources :sales_opportunities
+  get '/unassigned_opportunities' => "sales_opportunities#unassigned_opportunities", :as => :unassigned_opportunities
+  get '/assigned_opportunities' => "sales_opportunities#assigned_opportunities", :as => :assigned_opportunities
 
+  get '/add_opportunity_interaction' => "sales_opportunities#add_opportunity_interaction" , :as => :add_opportunity_interaction
+  post '/add_opportunity_interaction' => "sales_opportunities#add_opportunity_interaction"
+  get '/assign_opportunity(/:id)' => "sales_opportunities#assign_opportunity" , :as => :assign_opportunity
+  post '/assign_opportunity(/:id)' => "sales_opportunities#assign_opportunity"
+  get '/add_opportunity_log' => "sales_opportunities#add_opportunity_log" , :as => :add_opportunity_log
+  post '/add_opportunity_log' => "sales_opportunities#add_opportunity_log"
+  get "/my_opportunities"  => "sales_opportunities#my_opportunities" , :as => :my_opportunities
+  
+  get "/enable_km_page_category/:id" => "km_page_categories#enable" , :as => :enable_km_page_category
+  get "/disable_km_page_category/:id" => "km_page_categories#disable" , :as => :disable_km_page_category 
+  resources :km_page_categories do 
+    resources :km_pages
+  end  
 
-  # The priority is based upon order of creation:
-  # first created -> highest priority.
+  # The priority is based upon order of creation: first created -> highest priority.
+  # See how all your routes lay out with "rake routes".
+  # You can have the root of your site routed with "root"
+  root 'welcome#welcome'
 
-  # Sample of regular route:
-  #   match 'products/:id' => 'catalog#view'
-  # Keep in mind you can assign values other than :controller and :action
+  # Example of regular route:
+  #   get 'products/:id' => 'catalog#view'
 
-  # Sample of named route:
-  #   match 'products/:id/purchase' => 'catalog#purchase', :as => :purchase
-  # This route can be invoked with purchase_url(:id => product.id)
+  # Example of named route that can be invoked with purchase_url(id: product.id)
+  #   get 'products/:id/purchase' => 'catalog#purchase', as: :purchase
 
-  # Sample resource route (maps HTTP verbs to controller actions automatically):
+  # Example resource route (maps HTTP verbs to controller actions automatically):
   #   resources :products
 
-  # Sample resource route with options:
+  # Example resource route with options:
   #   resources :products do
   #     member do
   #       get 'short'
@@ -100,34 +122,31 @@ TopazSocial::Application.routes.draw do
   #     end
   #   end
 
-  # Sample resource route with sub-resources:
+  # Example resource route with sub-resources:
   #   resources :products do
   #     resources :comments, :sales
   #     resource :seller
   #   end
 
-  # Sample resource route with more complex sub-resources
+  # Example resource route with more complex sub-resources:
   #   resources :products do
   #     resources :comments
   #     resources :sales do
-  #       get 'recent', :on => :collection
+  #       get 'recent', on: :collection
   #     end
   #   end
 
-  # Sample resource route within a namespace:
+  # Example resource route with concerns:
+  #   concern :toggleable do
+  #     post 'toggle'
+  #   end
+  #   resources :posts, concerns: :toggleable
+  #   resources :photos, concerns: :toggleable
+
+  # Example resource route within a namespace:
   #   namespace :admin do
   #     # Directs /admin/products/* to Admin::ProductsController
   #     # (app/controllers/admin/products_controller.rb)
   #     resources :products
   #   end
-
-  # You can have the root of your site routed with "root"
-  # just remember to delete public/index.html.
-  # root :to => 'welcome#index'
-
-  # See how all your routes lay out with "rake routes"
-
-  # This is a legacy wild controller route that's not recommended for RESTful applications.
-  # Note: This route will make all actions in every controller accessible via GET requests.
-  # match ':controller(/:action(/:id))(.:format)'
 end

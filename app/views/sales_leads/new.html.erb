@@ -1,0 +1,10 @@
+<% content_for :breadcrumb do %>
+  <li><%= link_to "Sales Lead", sales_leads_path %> 
+  <li class="active">New Sales Lead</li>
+<% end %>
+<h1>New Sales Lead</h1>
+
+
+<%= render 'form' %>
+
+

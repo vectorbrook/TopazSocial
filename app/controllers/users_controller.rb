@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   
-  #load_and_authorize_resource
+  before_action :require_admin, :only => [:show, :employees, :non_employees, :customers, :edit_employee, :disable_user, :enable_user]
 
   def show
     @user = User.find(params[:id])
@@ -19,10 +19,16 @@ class UsersController < ApplicationController
   end
 
   def edit_employee
+    p "sssssss"
     @user = User.find params[:id]
+    p @user
     if request.put?
-      params[:user]["role"] = Util.add_default_roles(params[:user]["role"])
-      if @user.update_attributes(params[:user])
+      p "rrrrrrrr"
+      p params[:user]["role"]
+      #params[:user]["role"] = Util.add_default_roles(params[:user]["role"])
+      if @user.update(user_params)
+         p "sssss"
+         p @user
         redirect_to employees_path
       else
         render :edit_employee
@@ -84,22 +90,91 @@ class UsersController < ApplicationController
       end
     end
     redirect_to :back
+  end 
+   
+  def find_users
+    params[:r]
+    nm = {}
+    if params[:r]
+      nm = {:name => /#{params[:r]}/i }
+      @users = User.where(nm)
+    else
+      @users = nil
+    end
+    @followings = User.find current_user.followings
+    p @followings
+    @followers = User.find current_user.followers
   end
   
-  def social
-    @twitter_avlbl = false
-    if current_user and session[:twitter_token] and !session[:twitter_token].blank?
-      @twitter_avlbl = true
-      @lists = []
-      @lists = current_user.twitter_client.mentions
-    end
+  def show_profile
+    @user = User.where(:id => params[:id]).first
+  end 
+  
+  def follow
+    user = User.where(:id => params[:id]).first
+    if user
+      # check if the user has blocked the current_user
+       if(!user.blocked_users.include?(current_user.id))
+         current_user.followings << user.id 
+         user.followers << current_user.id
+         user.save
+         current_user.save 
+       end
+    end   
+    redirect_to find_users_path
+  end 
+  
+  
+  def unfollow
+    p current_user
+    p "ccccccccc"
+    p "111111111"
+    p params
+    p "2222222"
+    user = User.where(:id => params[:id]).first
+    p user
+    p "3333333"
+    if user
+         p "uuuuuuuuuuuu"
+         p user.id
+         p "ssssssss"
+         current_user.followings.delete(user.id) 
+         p  current_user.followings 
+         p "ffffffffff"
+         user.followers.delete(current_user.id)
+         user.save
+         p "4444"
+         p user
+         p "5555"
+         current_user.save 
+         p "666666"
+         p  current_user 
+         p "77777777"
+    end   
+    redirect_to find_users_path
   end
   
-  def do_tweet
-    if current_user and session[:twitter_token] and !session[:twitter_token].blank? and !params[:content].blank?
-      current_user.twitter_client.update(params[:content])
-    end
-    redirect_to social_path
-  end
+  def block_user
 
+    user = User.where(:id => params[:id]).first
+    if user
+     p "uuuuuuuuuuuu"
+     p user.id
+     p "ssssssss"
+     current_user.blocked_users << user.id 
+     p  current_user.blocked_users
+     p "4444"
+     current_user.save 
+     p "666666"
+     p  current_user 
+     p "77777777"
+    end   
+    redirect_to find_users_path
+  end
+  
+  private
+ 
+    def user_params
+      params.require(:user).permit(:name, :email, :password, :password_confirmation, :remember_me, :provider, :uid, :role => [])
+    end
 end

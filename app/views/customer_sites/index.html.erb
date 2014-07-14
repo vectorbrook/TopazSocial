@@ -1,40 +1,56 @@
 <% content_for :breadcrumb do %>
-  <li><%= link_to "Customer Accounts", customer_accounts_path %> <span class="divider">/</span></li>
+  <li><%= link_to "Customer Accounts", customer_accounts_path %>
   <li class="active">Customer Sites</li>
 <% end %>
-<h2>Customer Sites for <%= @customer_account.name %></h2>
-<table class="table table-bordered table-hover" >
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Address</th>
-    <th>Edit Customer Contact</th>
-    <th>Edit Customer Site</th>
-    <th>Add Contact</th>
-  </tr>
-  <% if @customer_sites.size > 0 -%>
-    <% @customer_sites.each do |t| -%>
+
+<div class="well well-sm">
+  <%= link_to 'New Customer Site', new_customer_account_customer_site_path(@customer_account) %> |
+  <%= link_to 'Customer Accounts', customer_accounts_path %>
+</div>
+
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <strong>Customer Sites for <%= @customer_account.name %></strong>
+  </div>  
+  <table class="table table-hover" >
+    <thead>
       <tr>
-        <td><%= link_to t.name , customer_account_customer_site_path(@customer_account,t) %>
-        </td>
-        <td><%= t.description %></td>
-        <td><%= t.full_address %></td>
-        <td>
-          <% if t.customer_contacts.size > 0 -%>
-            <% t.customer_contacts.each do |c| -%>
-              <%= link_to c.full_name , edit_customer_account_customer_site_customer_contact_path(@customer_account,t,c) %>
-            <% end -%>
-          <% end -%>
-        </td>
-        <td><%= link_to t.name , edit_customer_account_customer_site_path(@customer_account,t) %>
-        </td>
-        <td><%= link_to "Add a Contact" , new_customer_account_customer_site_customer_contact_path(@customer_account,t) %>
-        </td>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Address line1</th>
+        <th>Address line2</th>
+        <th>City</th>
+        <th>State</th>
+        <th>Country</th>
+        <th>Zipcode</th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
       </tr>
-    <% end -%>
-  <% end -%>
+    </thead>
 
-</table>
+    <tbody>
+      <% @customer_sites.each do |customer_site| %>
+        <tr>
+          <td><%= customer_site.name %></td>
+          <td><%= customer_site.description %></td>
+          <td><%= customer_site.address_line1 %></td>
+          <td><%= customer_site.address_line2 %></td>
+          <td><%= customer_site.city %></td>
+          <td><%= customer_site.state %></td>
+          <td><%= customer_site.country %></td>
+          <td><%= customer_site.zipcode %></td>
+          <td><%= link_to 'New Customer Contact', new_customer_account_customer_site_customer_contact_path(@customer_account, customer_site) %>| <%= link_to 'Show Customer Contact', customer_account_customer_site_customer_contacts_path(@customer_account,customer_site) %></td>
+          <td><%= link_to 'Show', customer_account_customer_site_path(@customer_account,customer_site) %></td>
+          <td><%= link_to 'Edit', edit_customer_account_customer_site_path(@customer_account, customer_site) %></td>
+          <td><%= link_to 'Destroy', customer_account_customer_site_path(@customer_account, customer_site), method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
 
-<%= link_to "Add a Site" , new_customer_account_customer_site_path(@customer_account) %>
+<%= paginate @customer_sites %>
 
+<%= page_entries_info @customer_sites %>

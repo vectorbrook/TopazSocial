@@ -1,51 +1,60 @@
 source 'https://rubygems.org'
 
-gem 'rails', '3.2.13'
-
-# Bundle edge Rails instead:
-# gem 'rails', :git => 'git://github.com/rails/rails.git'
+# Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
+gem 'rails', '~> 4.1.4'
 
 
+gem 'bson' #, '~> 1.9.2'
+gem 'bson_ext' #, '~> 1.9.2'
+gem 'mongo' #, '~> 1.9.2'
 
-# Gems used only for assets and not required
-# in production environments by default.
-group :assets do
-  gem 'sass-rails',   '~> 3.2.3'
-  gem 'coffee-rails', '~> 3.2.1'
+gem 'mongoid', '~> 4.0.0'
 
-  # See https://github.com/sstephenson/execjs#readme for more supported runtimes
-  # gem 'therubyracer', :platforms => :ruby
+gem 'devise', '~> 3.2.4'
 
-  gem 'uglifier', '>= 1.0.3'
+gem 'omniauth', '~> 1.2.2'
+gem 'omniauth-twitter', '~> 1.0.1'
+
+gem 'twitter', '~> 4.8.1'
+
+#gem 'simple_form', '~> 3.0.0'
+gem 'country_select', '~> 1.3.1'
+
+gem 'kaminari', '~> 0.16.1'
+
+group :development do
+  gem "thin", "~> 1.6.2"
+  # gem 'rspec-rails', '~> 2.14.0'
 end
 
-gem 'jquery-rails'
+group :test do
+  gem 'rspec-rails', '~> 3.0.1'
+  gem "factory_girl_rails", '~> 4.4.1'
+  gem "database_cleaner", '~> 1.3.0'
+end
 
-gem 'bson'
-gem 'bson_ext'
-gem "mongoid", ">= 3.0.3"
-gem "devise", ">= 2.1.2"
+# Use SCSS for stylesheets
+gem 'sass-rails', '~> 4.0.3'
 
+# Use Uglifier as compressor for JavaScript assets
+gem 'uglifier', '~> 2.5.1'
 
-gem 'simple_form'
-gem 'country_select'
-gem 'omniauth'
-gem 'omniauth-twitter'
+# Use CoffeeScript for .js.coffee assets and views
+gem 'coffee-rails', '~> 4.0.1'
 
-gem 'twitter'
-gem 'kaminari'
+# See https://github.com/sstephenson/execjs#readme for more supported runtimes
+# gem 'therubyracer', platforms: :ruby
 
-# To use ActiveModel has_secure_password
-# gem 'bcrypt-ruby', '~> 3.0.0'
+# Use jquery as the JavaScript library
+gem 'jquery-rails', '~> 3.1.1'
 
-# To use Jbuilder templates for JSON
-# gem 'jbuilder'
+# Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
+gem 'turbolinks', '~> 2.2.2'
 
-# Use unicorn as the app server
-# gem 'unicorn'
+# Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
+gem 'jbuilder', '~> 2.1.2'
 
-# Deploy with Capistrano
-# gem 'capistrano'
-
-# To use debugger
-# gem 'debugger'
+group :doc do
+  # bundle exec rake doc:rails generates the API under doc/api.
+  gem 'sdoc', require: false
+end

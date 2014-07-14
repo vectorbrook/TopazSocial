@@ -1,18 +1,57 @@
-<%= simple_form_for(@forum) do |f| %>
-  <%= f.error_notification %>
- 
-  <% if @forum.forum_category_id and !@forum.forum_category_id.blank? -%>
-    <%= f.hidden_field :forum_category_id %>
-  <% else -%>
-    
-      
-      <%= f.input :forum_category_id , :collection => ForumCategory.all.where(:enabled => true).collect {|fc| [fc.name, fc.id]}, :include_blank => false %>
-    
-  <% end -%>
-      <%= f.input :name  %>
-      <%= f.input :description, :as => :text, :input_html => {:size => "60x8"} %>
-      <%= f.button :submit %>
+<%= form_for(@forum, :url => { :controller => controller_name, :action => 'create'}, :html => { :id => "new_forum"}) do |f| %>
+  <% if @forum.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@forum.errors.count, "error") %> prohibited this forum from being saved:</h2>
+
+      <ul>
+      <% @forum.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :name %><br>
+    <%= f.text_field :name %>
+  </div>
+  <div class="field">
+    <%= f.label :description %><br>
+    <%= f.text_field :description %>
+  </div>
+  
+  <div class="actions">
+    <%= f.submit %>
+  </div>
 <% end %>
+<script type="text/javascript">
+  $(document).ready(function() {
+    //alert("hi  a" );
 
-
-
+    $('#new_forum').validate({
+      rules: {
+        'forum[name]': {
+          required: true
+        },
+        'forum[description]': {
+          required: true
+        },
+      },
+    highlight: function(element) {
+        $(element).closest('.form-group').addClass('has-error');
+    },
+    unhighlight: function(element) {
+        $(element).closest('.form-group').removeClass('has-error');
+    },
+    errorElement: 'span',
+    errorClass: 'help-block',
+    errorPlacement: function(error, element) {
+        if(element.parent('.input-group').length) {
+            error.insertAfter(element.parent());
+        } else {
+            error.insertAfter(element);
+        }
+    }
+    });
+  });
+</script>

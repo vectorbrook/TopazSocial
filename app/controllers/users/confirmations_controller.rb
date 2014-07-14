@@ -34,6 +34,7 @@ class Users::ConfirmationsController < Devise::PasswordsController
       end
     end
     if !@confirmable.errors.empty?
+      self.resource = @confirmable
       render 'users/confirmations/new'
     end
   end
@@ -41,7 +42,9 @@ class Users::ConfirmationsController < Devise::PasswordsController
   protected
 
   def with_unconfirmed_confirmable
-    @confirmable = User.find_or_initialize_with_error_by(:confirmation_token, params[:confirmation_token])
+    original_token = params[:confirmation_token]
+    confirmation_token = Devise.token_generator.digest(User, :confirmation_token, original_token)
+    @confirmable = User.find_or_initialize_with_error_by(:confirmation_token, confirmation_token)
     if !@confirmable.new_record?
       @confirmable.only_if_unconfirmed {yield}
     end

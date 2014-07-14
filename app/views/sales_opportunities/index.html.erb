@@ -1,0 +1,58 @@
+<% content_for :breadcrumb do %>
+ <li class="active">Sales Opportunity</li>
+<% end %>
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <strong>Sales Opportunity</strong>
+  </div>
+      <table class="table table-hover" >
+        <thead>
+          <tr>
+            <th>Sales Opportunity Name</th>
+            <th>Customer Account Name</th>
+            <th>Source</th>
+            <th>Status</th>
+            <th>description</th>
+            <% if (current_user and (current_user.role.include?("sales_manager") || current_user.role.include?("admin"))) %>
+            <th>Assigned To</th>
+            <% end %>
+          </tr>
+        </thead>  
+        <tbody>
+          <% for sales_opportunity in @sales_opportunities %>
+            <tr>
+              <td><%= link_to sales_opportunity.name , sales_opportunity_path(sales_opportunity) %></td>
+              <% if sales_opportunity.customer_account %>
+                <td><%= sales_opportunity.customer_account.name %></td>
+              <% else %>  
+                <td>
+                </td>
+              <% end %>
+              <td><%= sales_opportunity.source %></td>
+              <td><%= sales_opportunity.status %></td>
+              <td><%= sales_opportunity.description %></td>
+              <% if (current_user and (current_user.role.include?("sales_manager") || current_user.role.include?("admin"))) %>
+                <% if sales_opportunity.assigned? %>
+                  <td>  
+                    <%= sales_opportunity.assigned_user_name(sales_opportunity.assigned_to) %>
+                    <%= link_to "Re-Assign" , assign_opportunity_path(sales_opportunity)%>
+                  </td>  
+                <% else %>
+                  <td>
+                    <%= link_to "Assign" , assign_opportunity_path(sales_opportunity)%>
+                  </td> 
+                <% end-%>
+              <% end %>  
+            </tr>   
+        <% end %>
+      </tbody>  
+   </table>
+</div>
+
+<%= paginate @sales_opportunities %>
+
+<%= page_entries_info @sales_opportunities %>
+
+
+
+

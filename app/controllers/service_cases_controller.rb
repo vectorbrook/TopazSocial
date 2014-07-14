@@ -1,9 +1,23 @@
 class ServiceCasesController < ApplicationController
+  before_action :set_service_case, only: [:show, :edit, :update, :destroy]
+  
+  #before_action :check_role, :only => [:index, :unassigned_cases, :assigned_cases, :show, :new, :edit, :create, :update, :destroy, :my_cases, :add_log, :add_interaction, :assign_case]
 
-  before_filter :check_role, :only => [:index, :unassigned_cases, :assigned_cases, :show, :new, :edit, :create, :update, :destroy, :my_cases, :add_log, :add_interaction, :assign_case]
-
-  def check_role
-    is_admin? || is_support_manager? || is_support_agent? || is_social_media_manager? || is_community_manager?
+  before_action :require_employee, :only => [:new, :create, :edit, :update, :destroy]
+  before_action :require_service_manager, :only => [:unassigned_cases, :assigned_cases, :assign_case]
+  
+  def require_employee
+    if !(current_user and (current_user.role.include?("employee") || current_user.role.include?("contact")))
+      flash[:notice] = "You are not authorized."
+      redirect_to root_url
+    end
+  end
+  
+  def require_service_manager
+    if !(current_user and (current_user.role.include?("service_manager") || current_user.role.include?("admin")))
+      flash[:notice] = "You are not authorized."
+      redirect_to root_url
+    end
   end
 
   def index
@@ -16,58 +30,47 @@ class ServiceCasesController < ApplicationController
     else
       @service_cases = ServiceCase.order_by('name DESC').page params[:page]
     end
-
-
-    respond_to do |format|
-      format.html # index.html.erb
-      format.xml  { render :xml => @service_cases }
-      format.js
-    end
   end
 
   def unassigned_cases
-    #@service_cases = ServiceCase.all
-    cond_ = {}
-    if params[:r]
-      cond_ = {:name => /#{params[:r]}/i }
-       @service_cases = ServiceCase.unassigned.where(cond_).order_by('name DESC').page params[:page]
-    else
-       @service_cases = ServiceCase.unassigned.order_by('name DESC').page params[:page]
-    end
-    #@service_cases = ServiceCase.unassigned.where(:name => /#{params[:r]}/i).order(:name).page params[:page]
-
+    #@service_cases = ServiceCase.all 
+      cond_ = {}
+      if params[:r]
+        cond_ = {:name => /#{params[:r]}/i }
+         @service_cases = ServiceCase.unassigned.where(cond_).order_by('name DESC').page params[:page]
+      else
+         @service_cases = ServiceCase.unassigned.order_by('name DESC').page params[:page]
+      end
     respond_to do |format|
       format.html { render :index }
-      format.xml  { render :xml => @service_cases }
-      format.js
+      format.json { render json: @service_cases.errors, status: :unprocessable_entity }
     end
+    #@service_cases = ServiceCase.unassigned.where(:name => /#{params[:r]}/i).order(:name).page params[:page]
   end
 
   def assigned_cases
     #@service_cases = ServiceCase.all
-    cond_ = {}
-    if params[:r]
-      cond_ = {:name => /#{params[:r]}/i }
-      @service_cases = ServiceCase.assigned.where(cond_).order_by('name DESC').page params[:page]
-    else
-    #@service_cases = ServiceCase.assigned.where(:name => /#{params[:r]}/i).order(:name).page params[:page]
-    @service_cases = ServiceCase.assigned.order_by('name DESC').page params[:page]
-    end
-    respond_to do |format|
+      cond_ = {}
+      if params[:r]
+        cond_ = {:name => /#{params[:r]}/i }
+        @service_cases = ServiceCase.assigned.where(cond_).order_by('name DESC').page params[:page]
+      else
+      #@service_cases = ServiceCase.assigned.where(:name => /#{params[:r]}/i).order(:name).page params[:page]
+        @service_cases = ServiceCase.assigned.order_by('name DESC').page params[:page]
+      end
+     respond_to do |format|
       format.html { render :index }
-      format.xml  { render :xml => @service_cases }
-      format.js
-    end
+      format.json { render json: @service_cases.errors, status: :unprocessable_entity }
+     end 
   end
 
   # GET /service_cases/1
   # GET /service_cases/1.xml
   def show
-    @service_case = ServiceCase.find(params[:id])
+    @service_cases = ServiceCase.find(params[:id])
     #@cust_interaction = ServiceCaseInteraction.new(:service_case => @service_case)
-    @interactions = @service_case.interactions
-    @interaction = Interaction.new(:context => "ServiceCase",:context_id => @service_case.id)
-
+    #@service_case_interaction = @service_case.service_case_interactions.new
+    #@service_case_interaction = ServiceCaseInteraction.new(:context => "ServiceCase",:context_id => @service_case.id)
     session[:back_to] = service_case_path(@service_case)
 
     respond_to do |format|
@@ -80,11 +83,6 @@ class ServiceCasesController < ApplicationController
   # GET /service_cases/new.xml
   def new
     @service_case =  ServiceCase.new
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.xml  { render :xml => @service_case }
-    end
   end
 
   # GET /service_cases/1/edit
@@ -95,47 +93,37 @@ class ServiceCasesController < ApplicationController
   # POST /service_cases
   # POST /service_cases.xml
   def create
-    begin
-
-      @service_case = ServiceCase.new(params[:service_case])
+      p "in create service case controller"
+      @service_case = ServiceCase.new(service_case_params)
       @service_case.created_by = current_user.id
-      @service_case.save!
-
+      p "service cases are"
       respond_to do |format|
-        format.html { redirect_to(service_cases_path) }
-        format.xml  { render :xml => @service_case, :status => :created, :location => @service_case }
+          if @service_case.save
+            format.html { redirect_to @service_case, notice: 'service case was successfully created.' }
+            #servic = {"_id" => @service_case.id.to_s, "name" => @service_case.name, "description" => @service_case.description, "type" => @service_case.type, "priority" => @service_case.priority, "impact" => @service_case.impact, "status" => @service_case.status, "solution" => @service_case.solution}
+            #format.json { render json: servic }
+            format.json { render action: 'show', status: :created, location: @service_case }
+          else
+            format.html { render action: 'new' }
+            format.json { render json: @service_case.errors, status: :unprocessable_entity }
+          end
       end
-
-    rescue Exception => e
-
-      @service_case.try(:delete)
-
-      @service_case = ServiceCase.new(params[:service_case])
-
-      respond_to do |format|
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @service_case.errors, :status => :unprocessable_entity }
-      end
-
-    end
 
   end
 
   # PUT /service_cases/1
   # PUT /service_cases/1.xml
   def update
-    @service_case = ServiceCase.find(params[:id])
-    params[:service_case].delete("account_id")
-    params[:service_case][:type] = params[:service_case][:type].to_i
-    params[:service_case][:priority] = params[:service_case][:priority].to_i
-
     respond_to do |format|
-      if @service_case.update_attributes(params[:service_case])
-        format.html { redirect_to(service_cases_path) }
-        format.xml  { head :ok }
+      params[:service_case].delete("account_id")
+      params[:service_case][:type] = params[:service_case][:type].to_i
+      params[:service_case][:priority] = params[:service_case][:priority].to_i
+      if @service_case.update(service_case_params)
+        format.html { redirect_to @service_case, notice: 'service case was successfully created.' }
+        format.json { head :no_content }
       else
         format.html { render :action => "edit" }
-        format.xml  { render :xml => @service_case.errors, :status => :unprocessable_entity }
+        format.json  { render :json => @service_case.errors, :status => :unprocessable_entity }
       end
     end
   end
@@ -143,13 +131,11 @@ class ServiceCasesController < ApplicationController
   # DELETE /service_cases/1
   # DELETE /service_cases/1.xml
   def destroy
-    #require_roles
-    @service_case = ServiceCase.find(params[:id])
     @service_case.destroy
 
     respond_to do |format|
-      format.html { redirect_to(service_cases_url) }
-      format.xml  { head :ok }
+      format.html { redirect_to @service_case}
+      format.json  { head :no_content }
     end
   end
 
@@ -172,9 +158,7 @@ class ServiceCasesController < ApplicationController
       begin
         @service_case = ServiceCase.find(params[:service_case_id])
         @service_case.service_case_interactions.build(
-                        :description => params[:description],
-                        :status => params[:status],
-                        :solution => params[:solution],
+                        :interaction_text => params[:interaction_text],
                         :created_at => Time.now
                         ) if @service_case
         @service_case.try(:save!)
@@ -188,9 +172,13 @@ class ServiceCasesController < ApplicationController
   end
 
   def assign_case
+    p "11111111"
     if request.post?
+      p "2222222"
       begin
         @service_case = ServiceCase.find(params[:service_case_id])
+        p "service cases are"
+        p @service_case
         @service_case.try(:save!) if @service_case.assign_to(params[:employee])
       rescue Exception => e
 
@@ -206,20 +194,30 @@ class ServiceCasesController < ApplicationController
     if request.post?
       begin
         @service_case = ServiceCase.find(params[:service_case_id])
-        @service_case.service_case_logs.build(:log_text => params[:text], :user_id => current_user.id, :created_at => Time.now) if @service_case
-        @service_case.try(:save!)
+        @service_case_log = @service_case.service_case_logs.build(:log_text => params[:text], :user_id => current_user.id, :created_at => Time.now) if @service_case
+        @service_case_log.try(:save!)
+        p @service_case.service_case_logs
+        format.html { redirect_to @service_case, notice: 'Log entry was successfully created.' }
       rescue Exception => e
-
       end
       redirect_to ( @service_case || root_path )
     else
-
     end
   end
 
   def my_cases
+    p params
     @service_cases = current_user.assigned_service_cases
   end
-
+  
+  def set_service_case
+    @service_case = ServiceCase.find(params[:id])
+  end
+  
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def service_case_params
+    params.require(:service_case).permit(:name, :description, :type, :priority, :impact, :status, :solution, :created_by, :assigned_to, :customer_account_id, :customer_contact_id, :visible_to,:tags)
+  end
+  
 
 end

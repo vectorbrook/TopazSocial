@@ -1,7 +1,11 @@
 <% content_for :breadcrumb do %>
-  <li><%= link_to "Customer Accounts", customer_accounts_path %> <span class="divider">/</span></li>
-  <li><%= link_to "Customer Site", customer_account_customer_sites_path(@customer_account) %> <span class="divider">/</span></li>
+  <li><%= link_to "Customer Accounts", customer_accounts_path %>
+  <li><%= link_to "Customer Sites", customer_account_customer_sites_path(@customer_account) %> 
+  <li><%= link_to "Customer Contacts", customer_account_customer_site_customer_contacts_path(@customer_account, @customer_site) %> 
   <li class="active">New Customer Contact</li>
 <% end %>
+<h1>New customer_contact</h1>
+
 <%= render 'form' %>
 
+<%= link_to 'Back', customer_account_customer_sites_path(@customer_account, @customer_site) %>

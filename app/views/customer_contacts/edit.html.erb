@@ -1,12 +1,12 @@
 <% content_for :breadcrumb do %>
-  <li><%= link_to "Customer Accounts", customer_accounts_path %> <span class="divider">/</span></li>
-  <li><%= link_to "Customer Site", customer_account_customer_sites_path(@customer_account) %> <span class="divider">/</span></li>
+  <li><%= link_to "Customer Accounts", customer_accounts_path %>
+  <li><%= link_to "Customer Sites", customer_account_customer_sites_path(@customer_account) %> 
+  <li><%= link_to "Customer Contacts", customer_account_customer_site_customer_contacts_path(@customer_account, @customer_site) %> 
   <li class="active">Edit Customer Conatct </li>
 <% end %>
-<h1>Editing <%= @customer_site.name %> Contact <%= @customer_contact.full_name %></h1>
+<h2>Editing customer_contact</h2>
 
 <%= render 'form' %>
 
-<%= link_to 'Back', :back %>
 
-<%= link_to 'Delete Contact', customer_account_customer_site_customer_contact_path(@customer_account,@customer_site,@customer_contact) , :method => :delete , :confirm => "Are you sure?" %>
+<%= link_to 'Back', customer_account_customer_sites_path(@customer_account, @customer_site) %>

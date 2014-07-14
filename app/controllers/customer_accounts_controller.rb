@@ -1,134 +1,82 @@
 class CustomerAccountsController < ApplicationController
+  before_action :set_customer_account, only: [:show, :edit, :update, :destroy]
+  before_action :require_admin, :only => [:index, :show, :new, :edit, :create, :update]
 
-  before_filter :check_role, :only => [:index, :show, :new, :edit, :create, :update]
-  def check_role
-   is_admin? || is_support_manager?
-  end
 
   # GET /customer_accounts
-  # GET /customer_accounts.xml
+  # GET /customer_accounts.json
   def index
-    #@customer_accounts = CustomerAccount.all
+    cond_ = {}
     if params[:r]
       cond_ = {:name => /#{params[:r]}/i }
-
-      @customer_accounts = (CustomerAccount.where(cond_).order_by('created_at DESC').page params[:page]) || []
-      p @customer_accounts
+      @customer_accounts = CustomerAccount.where(cond_).order_by('name DESC').page params[:page]
     else
-      @customer_accounts = (CustomerAccount.order_by('created_at DESC').page params[:page]) || []
-    end
-    respond_to do |format|
-      format.html # index.html.erb
-      format.xml  { render :xml => @customer_accounts }
-      format.js
+      @customer_accounts = CustomerAccount.order_by('name DESC').page params[:page]
     end
   end
 
   # GET /customer_accounts/1
-  # GET /customer_accounts/1.xml
+  # GET /customer_accounts/1.json
   def show
-    @customer_account = CustomerAccount.find(params[:id])
-
-    respond_to do |format|
-      format.html # show.html.erb
-      format.xml  { render :xml => @customer_account }
-    end
   end
 
   # GET /customer_accounts/new
-  # GET /customer_accounts/new.xml
   def new
     @customer_account = CustomerAccount.new
-    @customer_site = CustomerSite.new #(:customer_account => @customer_account)
-    @customer_contact = CustomerContact.new#(:site => @site)
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.xml  { render :xml => @customer_account }
-    end
   end
 
   # GET /customer_accounts/1/edit
   def edit
-    @customer_account = CustomerAccount.find(params[:id])
   end
 
   # POST /customer_accounts
-  # POST /customer_accounts.xml
+  # POST /customer_accounts.json
   def create
-    begin
-
-      @customer_account = CustomerAccount.new(params[:customer_account])
-      @customer_account.save!
-      @customer_site = @customer_account.customer_sites.build(params[:customer_account][:customer_site])
-      #@customer_site.customer_account = @customer_account
-      @customer_site.save!
-      @customer_contact = @customer_site.customer_contacts.build(params[:customer_account][:customer_contact])
-      #@customer_contact.customer_site = @customer_site
-      @customer_contact.save!
-
-      respond_to do |format|
-        format.html { redirect_to(customer_accounts_path) }
-        format.xml  { render :xml => @customer_account, :status => :created, :location => @customer_account }
-      end
-
-    rescue Exception => e
-
-      @customer_contact.try(:delete)
-      @customer_site.try(:delete)
-      @customer_account.try(:delete)
-
-      @customer_contact = CustomerContact.new(params[:customer_account][:customer_contact])
-      @customer_site = CustomerSite.new(params[:customer_account][:customer_site])
-      @customer_account = CustomerAccount.new(params[:customer_account])
-
-      respond_to do |format|
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @customer_account.errors, :status => :unprocessable_entity }
-      end
-
-    end
-
-  end
-
-  # PUT /customer_accounts/1
-  # PUT /customer_accounts/1.xml
-  def update
-    @customer_account = CustomerAccount.find(params[:id])
+    @customer_account = CustomerAccount.new(customer_account_params)
 
     respond_to do |format|
-      if @customer_account.update_attributes(params[:customer_account])
-        format.html { redirect_to(customer_accounts_path) }
-        format.xml  { head :ok }
+      if @customer_account.save
+        format.html { redirect_to @customer_account, notice: 'Customer account was successfully created.' }
+        format.json { render action: 'show', status: :created, location: @customer_account }
       else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @customer_account.errors, :status => :unprocessable_entity }
+        format.html { render action: 'new' }
+        format.json { render json: @customer_account.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # PATCH/PUT /customer_accounts/1
+  # PATCH/PUT /customer_accounts/1.json
+  def update
+    respond_to do |format|
+      if @customer_account.update(customer_account_params)
+        format.html { redirect_to @customer_account, notice: 'Customer account was successfully updated.' }
+        format.json { head :no_content }
+      else
+        format.html { render action: 'edit' }
+        format.json { render json: @customer_account.errors, status: :unprocessable_entity }
       end
     end
   end
 
   # DELETE /customer_accounts/1
-  # DELETE /customer_accounts/1.xml
+  # DELETE /customer_accounts/1.json
   def destroy
-    @customer_account = CustomerAccount.find(params[:id])
     @customer_account.destroy
-
     respond_to do |format|
-      format.html { redirect_to(customer_accounts_url) }
-      format.xml  { head :ok }
+      format.html { redirect_to customer_accounts_url }
+      format.json { head :no_content }
     end
   end
 
-  def enable
-    @customer_account = CustomerAccount.find(params[:id])
-    @customer_account.save! if @customer_account.try(:enable,current_user)
-    redirect_to customer_accounts_path
-  end
+  private
+    # Use callbacks to share common setup or constraints between actions.
+    def set_customer_account
+      @customer_account = CustomerAccount.find(params[:id])
+    end
 
-   def disable
-    @customer_account = CustomerAccount.find(params[:id])
-    @customer_account.save! if @customer_account.try(:disable,current_user)
-    redirect_to customer_accounts_path
-  end
-
+    # Never trust parameters from the scary internet, only allow the white list through.
+    def customer_account_params
+      params.require(:customer_account).permit(:name, :description, :ac_type)
+    end
 end
