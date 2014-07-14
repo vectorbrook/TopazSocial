@@ -3,7 +3,7 @@ Topaz Social  README
 Technology Stack
 
   Ruby 1.9 (or higher)
-  Rails 3.2
+  Rails 4.1
   MongoDB (no hard dependency on version, but better to use latest version)
   Twitter Bootstrap (the bootstrap css, images, and javascript files are directly 
   included in /app/assets)
@@ -13,7 +13,6 @@ Main Gems
   Devise
   Omniauth
   Mongoid
-  SimpleForm
   Kaminari
 
 Philosophy
